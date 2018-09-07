@@ -10,13 +10,33 @@ icon = pygame.image.load("favicon.png")
 pygame.display.set_icon(icon)
 pygame.display.set_caption("Pyvlov's Dog - Simulation")
 
+
 class Rule:
     """
     A user created rule that the network is trained to follow
-    A rule is input as 
+    A rule is input as "Sensor == Value; Reward/Punish"
     """
+
     def __init__(self, text):
-        pass
+        string = text.split(";")
+        self.returns = string[1]
+        string = string[0].split(" ")
+        self.sensor = string[0]
+        self.value = string[-1]
+
+
+class Dog_Part:
+    """
+    A component of the dog. Something like a wheel or a sensor.
+    """
+
+    def __init__(self, relative_position, coordinates, sensor, collision_type):
+        self.relative_position = relative_position
+        self.coordinates = coordinates
+        self.sensor = sensor
+        self.collision_type = collision_type
+
+        self.shape = pymunk.Poly(None, )
 
 class Dog:
     """
@@ -25,6 +45,11 @@ class Dog:
 
     def __init__(self):
         # TODO Dog Stuff
+        self.body = pymunk.Body(1, 1)
+        self.body.position = (width/2, height/2)
+
+    def attach_part(self, part):
+
         pass
 
 
@@ -90,6 +115,7 @@ class Simulation:
         self.collision_shapes = []
         self.simulation_objects = []
         self.set_boundaries()
+        self.add_dog()
 
     def set_boundaries(self):
         """
@@ -134,6 +160,12 @@ class Simulation:
         obj = Object_Instance(type, size, location, self)
         self.simulation_objects.append(obj)
         self.collision_shapes.append(obj)
+
+    def add_dog(self):
+        """
+        Adds the dog to the simulation
+        """
+        self.dog = Dog()
 
     def step(self, time):
         """
