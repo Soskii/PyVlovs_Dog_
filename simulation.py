@@ -30,13 +30,13 @@ class Dog_Part:
     A component of the dog. Something like a wheel or a sensor.
     """
 
-    def __init__(self, relative_position, coordinates, sensor, collision_type):
-        self.relative_position = relative_position
+    def __init__(self, coordinates, sensor, collision_type):
         self.coordinates = coordinates
         self.sensor = sensor
         self.collision_type = collision_type
 
-        self.shape = pymunk.Poly(None, )
+        self.shape = pymunk.Poly(None, self.coordinates, radius=0.5)
+
 
 class Dog:
     """
@@ -46,11 +46,15 @@ class Dog:
     def __init__(self):
         # TODO Dog Stuff
         self.body = pymunk.Body(1, 1)
-        self.body.position = (width/2, height/2)
+        self.body.position = (width / 2, height / 2)
+        self.parts = []
 
     def attach_part(self, part):
-
-        pass
+        """
+        Attaches a part to the dog
+        """
+        part.body = self.body
+        self.parts.append(part)
 
 
 class Object_Type:
@@ -161,11 +165,13 @@ class Simulation:
         self.simulation_objects.append(obj)
         self.collision_shapes.append(obj)
 
-    def add_dog(self):
+    def add_dog(self, parts):
         """
         Adds the dog to the simulation
         """
         self.dog = Dog()
+        for part in parts:
+            self.dog.attach_part(part)
 
     def step(self, time):
         """
