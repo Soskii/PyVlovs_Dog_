@@ -43,11 +43,13 @@ class Dog:
     The dog simulated by the simulation.
     """
 
-    def __init__(self):
+    def __init__(self, parts):
         # TODO Dog Stuff
         self.body = pymunk.Body(1, 1)
         self.body.position = (width / 2, height / 2)
         self.parts = []
+        for part in parts:
+            self.attach_part(part)
 
     def attach_part(self, part):
         """
@@ -55,6 +57,10 @@ class Dog:
         """
         part.body = self.body
         self.parts.append(part)
+
+    def add_to_sim(self, simulation):
+        simulation.add(self.body)
+        simulation.add(self.parts)
 
 
 class Object_Type:
@@ -119,7 +125,7 @@ class Simulation:
         self.collision_shapes = []
         self.simulation_objects = []
         self.set_boundaries()
-        self.add_dog()
+        # self.add_dog()
 
     def set_boundaries(self):
         """
@@ -165,13 +171,12 @@ class Simulation:
         self.simulation_objects.append(obj)
         self.collision_shapes.append(obj)
 
-    def add_dog(self, parts):
+    def add(self, objects):
         """
-        Adds the dog to the simulation
+        Adds the objects to the simulation
         """
-        self.dog = Dog()
-        for part in parts:
-            self.dog.attach_part(part)
+        for obj in objects:
+            self.space.add(obj)
 
     def step(self, time):
         """
@@ -190,7 +195,6 @@ class Simulation:
 
 
 sim = Simulation()
-sim.set_boundaries()
 
 brick = Object_Type([255, 255, 0], 255, True, 1)
 sim.add_static_body(brick, 50, (360, 360))
