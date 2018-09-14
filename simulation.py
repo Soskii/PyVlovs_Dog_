@@ -30,12 +30,27 @@ class Dog_Part:
     A component of the dog. Something like a wheel or a sensor.
     """
 
-    def __init__(self, coordinates, sensor, collision_type):
+    def __init__(self, coordinates, sensor, collision_type, colour):
         self.coordinates = coordinates
         self.sensor = sensor
         self.collision_type = collision_type
+        self.colour = colour
 
         self.shape = pymunk.Poly(None, self.coordinates, radius=0.5)
+
+    def get_vertices(self):
+        vertices = []
+        bx = self.shape.body.position[0]
+        by = self.shape.body.position[1]
+        for v in self.shape.get_vertices():
+            vertices.append((v[0] + bx, v[1] + by))
+        return vertices
+
+    def draw(self):
+        """
+        draws the individual part
+        """
+        pygame.draw.polygon(screen, self.colour, self.get_vertices())
 
 
 class Dog:
@@ -50,6 +65,7 @@ class Dog:
         self.parts = []
         for part in parts:
             self.attach_part(part)
+            self.parts.append(part)
 
     def attach_part(self, part):
         """
@@ -60,7 +76,14 @@ class Dog:
 
     def add_to_sim(self, simulation):
         simulation.add(self.body)
-        simulation.add(self.parts)
+        simulation.add_group(self.parts)
+
+    def draw(self):
+        """
+        draws each individual part of the dog into the pygame window
+        """
+        for part in self.parts:
+            part.draw()
 
 
 class Object_Type:
@@ -125,7 +148,7 @@ class Simulation:
         self.collision_shapes = []
         self.simulation_objects = []
         self.set_boundaries()
-        # self.add_dog()
+        self.dog = None
 
     def set_boundaries(self):
         """
@@ -171,12 +194,18 @@ class Simulation:
         self.simulation_objects.append(obj)
         self.collision_shapes.append(obj)
 
-    def add(self, objects):
+    def add_group_shapes(self, objects):
         """
-        Adds the objects to the simulation
+        Adds the shapes to the simulation
         """
         for obj in objects:
-            self.space.add(obj)
+            self.space.add(obj.shape)
+
+    def add(self, object):
+        """
+        Adds an individual object to the simulation
+        """
+        self.space.add(object)
 
     def step(self, time):
         """
@@ -184,21 +213,46 @@ class Simulation:
         """
         self.space.step(time)
 
-    def display_update(self):
+    def draw_simulation_objects(self):
         """
         This draws the shapes within the simulation into the pygame window
         """
         screen.fill([0, 90, 0])
         for object in self.simulation_objects:
             object.draw()
+
+    
+
+    def draw_dog(self):
+        """
+        draws the dog into the pygame window
+        """
+        if self.dog != None:
+            self.dog.draw()
+
+    def display_update(self):
+        """
+        updates the pygame window
+        """
+        self.draw_simulation_objects()
+        self.draw_dog()
         pygame.display.update()
 
+
+black = [0, 0, 0]
 
 sim = Simulation()
 
 brick = Object_Type([255, 255, 0], 255, True, 1)
 sim.add_static_body(brick, 50, (360, 360))
 sim.add_static_body(brick, 50, (40, 40))
+
+chassis = Dog_Part([(5, 0), (15, 0), (15, 20), (5, 20)], False, 0, black)
+left_wheel = Dog_Part([(0, 0), (5, 0), (5, 10), (0, 10)], False, 0, black)
+right_wheel = Dog_Part([(15, 0), (20, 0), (20, 10), (15, 10)], False, 0, black)
+
+dog_parts = [chassis, left_wheel, right_wheel]
+dog = Dog(dog_parts)
 
 while True:
     sim.step(0.01)
