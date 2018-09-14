@@ -29,28 +29,50 @@ class Dog_Part:
     """
     A component of the dog. Something like a wheel or a sensor.
     """
+    #TODO
+    #Rework the positioning. have shape coordinates, local coordinates and globals
+    #See the red dot in the pygame screen, that's the body
+    #Fit the body in the middle of the chassis
 
-    def __init__(self, coordinates, sensor, collision_type, colour):
+    def __init__(self, coordinates, sensor, collision_type, colour, wheel="N"):
         self.coordinates = coordinates
         self.sensor = sensor
         self.collision_type = collision_type
         self.colour = colour
+        self.wheel = wheel
 
         self.shape = pymunk.Poly(None, self.coordinates, radius=0.5)
 
-    def get_vertices(self):
+    def get_global_vertices(self):
+        """
+        gets the global vertices of the shape
+        """
         vertices = []
         bx = self.shape.body.position[0]
         by = self.shape.body.position[1]
         for v in self.shape.get_vertices():
-            vertices.append((v[0] + bx, v[1] + by))
+            rotated = v.rotated(self.shape.body.angle)
+            vertices.append((rotated[0] + bx, rotated[1] + by))
         return vertices
+
+    def get_local_point(self):
+        """
+        Gets the local coordinates of the centre of the part, relative to the body
+        """
+        pass
 
     def draw(self):
         """
         draws the individual part
         """
-        pygame.draw.polygon(screen, self.colour, self.get_vertices())
+        pygame.draw.polygon(screen, self.colour, self.get_global_vertices())
+
+    def apply_force(self, force):
+        """
+        applys a force of the magnitude prescribed to the object, upwards in terms of local coordinates
+        """
+
+
 
 
 class Dog:
@@ -63,20 +85,22 @@ class Dog:
         self.body = pymunk.Body(1, 1)
         self.body.position = (width / 2, height / 2)
         self.parts = []
+        self.left_wheels = []
+        self.right_wheels = []
         for part in parts:
             self.attach_part(part)
             self.parts.append(part)
+            if part.wheel == "L":
+                self.left_wheels.append(part)
+            if part.wheel == "R":
+                self.right_wheels.append(part)
 
     def attach_part(self, part):
         """
         Attaches a part to the dog
         """
-        part.body = self.body
+        part.shape.body = self.body
         self.parts.append(part)
-
-    def add_to_sim(self, simulation):
-        simulation.add(self.body)
-        simulation.add_group(self.parts)
 
     def draw(self):
         """
@@ -84,6 +108,19 @@ class Dog:
         """
         for part in self.parts:
             part.draw()
+        position = []
+        position.append(int(self.body.position[0]))
+        position.append(int(self.body.position[1]))
+        pygame.draw.circle(screen, [255, 0, 0], position, 1)
+
+    def apply_wheel_force(self, left_rpm, right_rpm):
+        """
+        applies the wheel velocities to all of the wheels.
+        """
+        for part in self.left_wheels:
+            part.apply_force(left_rpm)
+        for part in self.right_wheels:
+            part.apply_force(right_rpm)
 
 
 class Object_Type:
@@ -221,7 +258,8 @@ class Simulation:
         for object in self.simulation_objects:
             object.draw()
 
-    
+    def add_dog(self, parts):
+        self.dog = Dog(parts)
 
     def draw_dog(self):
         """
@@ -248,11 +286,11 @@ sim.add_static_body(brick, 50, (360, 360))
 sim.add_static_body(brick, 50, (40, 40))
 
 chassis = Dog_Part([(5, 0), (15, 0), (15, 20), (5, 20)], False, 0, black)
-left_wheel = Dog_Part([(0, 0), (5, 0), (5, 10), (0, 10)], False, 0, black)
-right_wheel = Dog_Part([(15, 0), (20, 0), (20, 10), (15, 10)], False, 0, black)
+left_wheel = Dog_Part([(0, 0), (5, 0), (5, 10), (0, 10)], False, 0, black, wheel="L")
+right_wheel = Dog_Part([(15, 0), (20, 0), (20, 10), (15, 10)], False, 0, black, wheel="R")
 
 dog_parts = [chassis, left_wheel, right_wheel]
-dog = Dog(dog_parts)
+sim.add_dog(dog_parts)
 
 while True:
     sim.step(0.01)
