@@ -33,7 +33,7 @@ class Dog_Part:
     """
 
     # TODO
-    # The dog position image isn't updating
+    # local collisions
 
     def __init__(self, shape_vertices, displacement, sensor, collision_type, colour, wheel="N"):
         self.shape_vertices = shape_vertices
@@ -45,6 +45,8 @@ class Dog_Part:
         self.wheel = wheel
 
         self.shape = pymunk.Poly(None, self.local_coordinates, radius=0.5)
+        self.shape.collision_type = self.collision_type
+        self.shape.sensor = self.sensor
 
     def get_local_vertices(self):
         """
@@ -118,7 +120,6 @@ class Dog_Part:
         applies a force of the magnitude prescribed to the object, upwards in terms of local coordinates
         """
         self.shape.body.apply_impulse_at_local_point(force, self.get_local_point())
-        print(self.shape.body.velocity)
 
 
 class Dog:
@@ -277,7 +278,6 @@ class Simulation:
         self.simulation_objects.append(obj)
         self.collision_shapes.append(obj)
 
-
     def add(self, object):
         """
         Adds an individual object to the simulation
@@ -308,8 +308,6 @@ class Simulation:
         for part in parts:
             sim.add(part.shape)
 
-
-
     def draw_dog(self):
         """
         draws the dog into the pygame window
@@ -328,6 +326,7 @@ class Simulation:
 
 black = [0, 0, 0]
 brown = [90, 90, 30]
+yellow = [255, 255, 0]
 
 sim = Simulation()
 
@@ -338,8 +337,9 @@ sim.add_static_body(brick, 50, (40, 40))
 chassis = Dog_Part([(0, 0), (50, 0), (50, 100), (0, 100)], (-25, 0), False, 0, brown)
 left_wheel = Dog_Part([(0, 0), (20, 0), (20, 30), (0, 30)], (-45, 0), False, 0, black, wheel="L")
 right_wheel = Dog_Part([(0, 0), (20, 0), (20, 30), (0, 30)], (25, 0), False, 0, black, wheel="R")
+ldr = Dog_Part([(0, 0), (6, 0), (6, 6), (0, 6)], (-3, -5), True, 1, yellow)
 
-dog_parts = [chassis, left_wheel, right_wheel]
+dog_parts = [chassis, left_wheel, right_wheel, ldr]
 sim.add_dog(dog_parts)
 
 while True:
