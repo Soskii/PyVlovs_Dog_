@@ -13,12 +13,6 @@ pygame.display.set_icon(icon)
 pygame.display.set_caption("Pyvlov's Dog - Simulation")
 
 
-def test(arbiter, space, data):
-    print("niib")
-
-
-# todo
-# make this work
 class Collision_Handler:
     """
     handles a collision. allows for localised collisions that result in something, like an ldr to act like a sensor
@@ -34,7 +28,10 @@ class Collision_Handler:
         """
         the function called when the collision occurs
         """
-        print(self.outcome)
+        if self.outcome == "punish":
+            self.sim.punish = True
+        if self.outcome == "reward":
+            self.sim.reward = True
         return True
 
 
@@ -247,6 +244,8 @@ class Simulation:
         self.collision_handlers = []
         self.set_boundaries()
         self.dog = None
+        self.punish = 0
+        self.reward = 0
 
     def set_boundaries(self):
         """
@@ -307,6 +306,7 @@ class Simulation:
         self.dog.body.velocity = (0, 0)
         self.dog.body.angular_velocity = 0
         self.space.step(time)
+        self.punish, self.reward = False, False
 
     def draw_simulation_objects(self):
         """
