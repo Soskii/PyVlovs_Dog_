@@ -1,14 +1,18 @@
 import simulation as sm
 
 black = [0, 0, 0]
-brown = [90, 90, 30]
+brown = [51, 51, 0]
 yellow = [255, 255, 0]
+red = [90, 0, 0]
 
 sim = sm.Simulation()
 
-light = sm.Object_Type([255, 255, 0], 255, True, 1)
+light = sm.Object_Type(yellow, True, 1)
 sim.add_static_body(light, 50, (640, 200))
 sim.add_static_body(light, 50, (40, 40))
+
+brick = sm.Object_Type(red, False, 4)
+sim.add_static_body(brick, 75, (640, 300))
 
 chassis = sm.Dog_Part([(0, 0), (50, 0), (50, 100), (0, 100)], (-25, -25), False, 0, brown)
 
@@ -24,6 +28,8 @@ dog_parts = [chassis, left_wheel, right_wheel, b_left_wheel, b_right_wheel, ldr,
 sim.add_dog(dog_parts)
 
 sim.add_collision_handler(2, 1, "punish")
+sim.add_collision_handler(3, 4, "reward")
+
 while True:
     wheel_values = sim.input_network()
     sim.step(0.01, wheel_values[0], wheel_values[1])

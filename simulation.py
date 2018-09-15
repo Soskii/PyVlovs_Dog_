@@ -184,9 +184,8 @@ class Object_Type:
     An object type for the purposes of the simulation
     """
 
-    def __init__(self, colour, alpha, collide, collision_type):
+    def __init__(self, colour, collide, collision_type):
         self.colour = colour
-        self.alpha = alpha
         self.collide = collide
         self.collision_type = collision_type
 
@@ -199,7 +198,6 @@ class Object_Instance:
     def __init__(self, type, size, position, simulation):
         # Instantiates the basic components of the object
         self.colour = type.colour
-        self.alpha = type.alpha
         self.collide = type.collide
         self.collision = type.collision_type
         self.size = size
@@ -306,6 +304,7 @@ class Simulation:
         self.dog.body.velocity = (0, 0)
         self.dog.body.angular_velocity = 0
         self.space.step(time)
+        print(self.punish, self.reward)
         self.punish, self.reward = False, False
 
     def draw_simulation_objects(self):
@@ -321,9 +320,9 @@ class Simulation:
         adds the dog into the simulation
         """
         self.dog = Dog(parts)
-        sim.add(self.dog.body)
+        self.space.add(self.dog.body)
         for part in parts:
-            sim.add(part.shape)
+            self.space.add(part.shape)
 
     def draw_dog(self):
         """
@@ -352,32 +351,32 @@ class Simulation:
         self.collision_handlers.append(Collision_Handler(self, object_type_1, object_type_2, outcome))
 
 
-black = [0, 0, 0]
-brown = [90, 90, 30]
-yellow = [255, 255, 0]
-
-sim = Simulation()
-
-light = Object_Type([255, 255, 0], 255, True, 1)
-sim.add_static_body(light, 50, (640, 200))
-sim.add_static_body(light, 50, (40, 40))
-
-chassis = Dog_Part([(0, 0), (50, 0), (50, 100), (0, 100)], (-25, -25), False, 0, brown)
-
-left_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (-36, -20), False, 0, black, wheel="L")
-right_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (26, -20), False, 0, black, wheel="R")
-b_left_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (-36, 35), False, 0, black, wheel="L")
-b_right_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (26, 35), False, 0, black, wheel="R")
-
-ldr = Dog_Part([(0, 0), (50, 0), (50, 6), (0, 6)], (-25, -35), True, 2, yellow)
-ultra_sonic = Dog_Part([(0, 0), (6, 0), (6, 40), (0, 40)], (-3, -65), True, 3, black)
-
-dog_parts = [chassis, left_wheel, right_wheel, b_left_wheel, b_right_wheel, ldr, ultra_sonic]
-sim.add_dog(dog_parts)
-
-sim.add_collision_handler(2, 1, "punish")
-
-while True:
-    wheel_values = sim.input_network()
-    sim.step(0.01, wheel_values[0], wheel_values[1])
-    sim.display_update()
+# black = [0, 0, 0]
+# brown = [90, 90, 30]
+# yellow = [255, 255, 0]
+#
+# sim = Simulation()
+#
+# light = Object_Type([255, 255, 0], 255, True, 1)
+# sim.add_static_body(light, 50, (640, 200))
+# sim.add_static_body(light, 50, (40, 40))
+#
+# chassis = Dog_Part([(0, 0), (50, 0), (50, 100), (0, 100)], (-25, -25), False, 0, brown)
+#
+# left_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (-36, -20), False, 0, black, wheel="L")
+# right_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (26, -20), False, 0, black, wheel="R")
+# b_left_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (-36, 35), False, 0, black, wheel="L")
+# b_right_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (26, 35), False, 0, black, wheel="R")
+#
+# ldr = Dog_Part([(0, 0), (50, 0), (50, 6), (0, 6)], (-25, -35), True, 2, yellow)
+# ultra_sonic = Dog_Part([(0, 0), (6, 0), (6, 40), (0, 40)], (-3, -65), True, 3, black)
+#
+# dog_parts = [chassis, left_wheel, right_wheel, b_left_wheel, b_right_wheel, ldr, ultra_sonic]
+# sim.add_dog(dog_parts)
+#
+# sim.add_collision_handler(2, 1, "punish")
+#
+# while True:
+#     wheel_values = sim.input_network()
+#     sim.step(0.01, wheel_values[0], wheel_values[1])
+#     sim.display_update()
