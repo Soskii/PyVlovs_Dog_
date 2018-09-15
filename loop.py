@@ -1,4 +1,5 @@
 import simulation as sm
+import gui
 
 black = [0, 0, 0]
 brown = [51, 51, 0]
