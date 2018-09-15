@@ -1,6 +1,7 @@
 import pymunk
 import pygame
 import math
+import random
 
 # PYGAME INITIALISE
 pygame.init()
@@ -12,18 +13,29 @@ pygame.display.set_icon(icon)
 pygame.display.set_caption("Pyvlov's Dog - Simulation")
 
 
-class Rule:
+def test(arbiter, space, data):
+    print("niib")
+
+
+# todo
+# make this work
+class Collision_Handler:
     """
-    A user created rule that the network is trained to follow
-    A rule is input as "Sensor == Value; Reward/Punish"
+    handles a collision. allows for localised collisions that result in something, like an ldr to act like a sensor
     """
 
-    def __init__(self, text):
-        string = text.split(";")
-        self.returns = string[1]
-        string = string[0].split(" ")
-        self.sensor = string[0]
-        self.value = string[-1]
+    def __init__(self, simulation, object1, object2, outcome):
+        self.sim = simulation
+        self.handler = simulation.space.add_collision_handler(object1, object2)
+        self.outcome = outcome
+        self.handler.pre_solve = self.response
+
+    def response(self, arbiter, space, data):
+        """
+        the function called when the collision occurs
+        """
+        print(self.outcome)
+        return True
 
 
 class Dog_Part:
@@ -31,9 +43,6 @@ class Dog_Part:
     A component of the dog. Something like a wheel or a sensor.
 
     """
-
-    # TODO
-    # local collisions
 
     def __init__(self, shape_vertices, displacement, sensor, collision_type, colour, wheel="N"):
         self.shape_vertices = shape_vertices
@@ -165,9 +174,12 @@ class Dog:
         applies the wheel velocities to all of the wheels.
         """
         for part in self.left_wheels:
-            part.apply_force((0.00, -left_rpm * part.get_circumference()))
+            displacement = -left_rpm * part.get_circumference()
+
+            part.apply_force((0.00, displacement))
         for part in self.right_wheels:
-            part.apply_force((0.00, -right_rpm * part.get_circumference()))
+            displacement = -right_rpm * part.get_circumference()
+            part.apply_force((0.00, displacement))
 
 
 class Object_Type:
@@ -201,6 +213,7 @@ class Object_Instance:
         self.body = pymunk.Body(1, 0, pymunk.Body.STATIC)
         self.body.position = self.position
         self.shape = pymunk.Poly.create_box(self.body, (self.size, self.size), radius=1)
+        self.shape.collision_type = self.collision
         self.simulation.space.add(self.body, self.shape)
 
     def get_vertices(self):
@@ -231,6 +244,7 @@ class Simulation:
         self.space = pymunk.Space()
         self.collision_shapes = []
         self.simulation_objects = []
+        self.collision_handlers = []
         self.set_boundaries()
         self.dog = None
 
@@ -303,6 +317,9 @@ class Simulation:
             object.draw()
 
     def add_dog(self, parts):
+        """
+        adds the dog into the simulation
+        """
         self.dog = Dog(parts)
         sim.add(self.dog.body)
         for part in parts:
@@ -323,6 +340,17 @@ class Simulation:
         self.draw_dog()
         pygame.display.update()
 
+    def input_network(self):
+        """
+        polls the neural network with the input data to get the next step
+        """
+        left_wheel = 0.01  # random.randint(0, 10)/1000
+        right_wheel = 0.01  # random.randint(0, 10)/1000
+        return (left_wheel, right_wheel)
+
+    def add_collision_handler(self, object_type_1, object_type_2, outcome):
+        self.collision_handlers.append(Collision_Handler(self, object_type_1, object_type_2, outcome))
+
 
 black = [0, 0, 0]
 brown = [90, 90, 30]
@@ -330,18 +358,26 @@ yellow = [255, 255, 0]
 
 sim = Simulation()
 
-brick = Object_Type([255, 255, 0], 255, True, 1)
-sim.add_static_body(brick, 50, (720, 200))
-sim.add_static_body(brick, 50, (40, 40))
+light = Object_Type([255, 255, 0], 255, True, 1)
+sim.add_static_body(light, 50, (640, 200))
+sim.add_static_body(light, 50, (40, 40))
 
-chassis = Dog_Part([(0, 0), (50, 0), (50, 100), (0, 100)], (-25, 0), False, 0, brown)
-left_wheel = Dog_Part([(0, 0), (20, 0), (20, 30), (0, 30)], (-45, 0), False, 0, black, wheel="L")
-right_wheel = Dog_Part([(0, 0), (20, 0), (20, 30), (0, 30)], (25, 0), False, 0, black, wheel="R")
-ldr = Dog_Part([(0, 0), (6, 0), (6, 6), (0, 6)], (-3, -5), True, 1, yellow)
+chassis = Dog_Part([(0, 0), (50, 0), (50, 100), (0, 100)], (-25, -25), False, 0, brown)
 
-dog_parts = [chassis, left_wheel, right_wheel, ldr]
+left_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (-36, -20), False, 0, black, wheel="L")
+right_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (26, -20), False, 0, black, wheel="R")
+b_left_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (-36, 35), False, 0, black, wheel="L")
+b_right_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (26, 35), False, 0, black, wheel="R")
+
+ldr = Dog_Part([(0, 0), (50, 0), (50, 6), (0, 6)], (-25, -35), True, 2, yellow)
+ultra_sonic = Dog_Part([(0, 0), (6, 0), (6, 40), (0, 40)], (-3, -65), True, 3, black)
+
+dog_parts = [chassis, left_wheel, right_wheel, b_left_wheel, b_right_wheel, ldr, ultra_sonic]
 sim.add_dog(dog_parts)
 
+sim.add_collision_handler(2, 1, "punish")
+
 while True:
-    sim.step(0.01, 0.1, 0.1)
+    wheel_values = sim.input_network()
+    sim.step(0.01, wheel_values[0], wheel_values[1])
     sim.display_update()
