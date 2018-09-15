@@ -1,5 +1,6 @@
 import pymunk
 import pygame
+import math
 
 # PYGAME INITIALISE
 pygame.init()
@@ -28,20 +29,34 @@ class Rule:
 class Dog_Part:
     """
     A component of the dog. Something like a wheel or a sensor.
-    """
-    #TODO
-    #Rework the positioning. have shape coordinates, local coordinates and globals
-    #See the red dot in the pygame screen, that's the body
-    #Fit the body in the middle of the chassis
 
-    def __init__(self, coordinates, sensor, collision_type, colour, wheel="N"):
-        self.coordinates = coordinates
+    """
+
+    # TODO
+    # The dog position image isn't updating
+
+    def __init__(self, shape_vertices, displacement, sensor, collision_type, colour, wheel="N"):
+        self.shape_vertices = shape_vertices
+        self.displacement = displacement
+        self.local_coordinates = self.get_local_vertices()
         self.sensor = sensor
         self.collision_type = collision_type
         self.colour = colour
         self.wheel = wheel
 
-        self.shape = pymunk.Poly(None, self.coordinates, radius=0.5)
+        self.shape = pymunk.Poly(None, self.local_coordinates, radius=0.5)
+
+    def get_local_vertices(self):
+        """
+        Adds the displacement of the shape to the shapes vertices to return the local coordinates of it
+        """
+        vertices = []
+        dx, dy = self.displacement[0], self.displacement[1]
+        for point in self.shape_vertices:
+            new_x = point[0] + dx
+            new_y = point[1] + dy
+            vertices.append((new_x, new_y))
+        return vertices
 
     def get_global_vertices(self):
         """
@@ -59,7 +74,10 @@ class Dog_Part:
         """
         Gets the local coordinates of the centre of the part, relative to the body
         """
-        pass
+        dx = self.displacement[0]
+        dy = self.displacement[1]
+        centre = (self.get_width() / 2 + dx, self.get_height() / 2 + dy)
+        return centre
 
     def draw(self):
         """
@@ -67,12 +85,40 @@ class Dog_Part:
         """
         pygame.draw.polygon(screen, self.colour, self.get_global_vertices())
 
+    def get_width(self):
+        """
+        Gets the maximum width of the object
+        """
+        width = 0
+        for vertex in self.shape_vertices:
+            if vertex[0] > width:
+                width = vertex[0]
+        return width
+
+    def get_height(self):
+        """
+        Gets the maximum height of the object
+        """
+        height = 0
+        for vertex in self.shape_vertices:
+            if vertex[1] > height:
+                height = vertex[1]
+        return height
+
+    def get_circumference(self):
+        """
+        Gets the circumference, presuming the object is a wheel
+        """
+        diameter = self.get_height()
+        circumference = diameter * math.pi
+        return circumference
+
     def apply_force(self, force):
         """
-        applys a force of the magnitude prescribed to the object, upwards in terms of local coordinates
+        applies a force of the magnitude prescribed to the object, upwards in terms of local coordinates
         """
-
-
+        self.shape.body.apply_impulse_at_local_point(force, self.get_local_point())
+        print(self.shape.body.velocity)
 
 
 class Dog:
@@ -111,16 +157,16 @@ class Dog:
         position = []
         position.append(int(self.body.position[0]))
         position.append(int(self.body.position[1]))
-        pygame.draw.circle(screen, [255, 0, 0], position, 1)
+        pygame.draw.circle(screen, [255, 0, 0], position, 4)
 
     def apply_wheel_force(self, left_rpm, right_rpm):
         """
         applies the wheel velocities to all of the wheels.
         """
         for part in self.left_wheels:
-            part.apply_force(left_rpm)
+            part.apply_force((0.00, -left_rpm * part.get_circumference()))
         for part in self.right_wheels:
-            part.apply_force(right_rpm)
+            part.apply_force((0.00, -right_rpm * part.get_circumference()))
 
 
 class Object_Type:
@@ -231,12 +277,6 @@ class Simulation:
         self.simulation_objects.append(obj)
         self.collision_shapes.append(obj)
 
-    def add_group_shapes(self, objects):
-        """
-        Adds the shapes to the simulation
-        """
-        for obj in objects:
-            self.space.add(obj.shape)
 
     def add(self, object):
         """
@@ -244,10 +284,14 @@ class Simulation:
         """
         self.space.add(object)
 
-    def step(self, time):
+    def step(self, time, left_rpm, right_rpm):
         """
         This steps the space for the time specified
         """
+        self.dog.apply_wheel_force(left_rpm, right_rpm)
+        self.space.step(time)
+        self.dog.body.velocity = (0, 0)
+        self.dog.body.angular_velocity = 0
         self.space.step(time)
 
     def draw_simulation_objects(self):
@@ -260,6 +304,11 @@ class Simulation:
 
     def add_dog(self, parts):
         self.dog = Dog(parts)
+        sim.add(self.dog.body)
+        for part in parts:
+            sim.add(part.shape)
+
+
 
     def draw_dog(self):
         """
@@ -278,20 +327,21 @@ class Simulation:
 
 
 black = [0, 0, 0]
+brown = [90, 90, 30]
 
 sim = Simulation()
 
 brick = Object_Type([255, 255, 0], 255, True, 1)
-sim.add_static_body(brick, 50, (360, 360))
+sim.add_static_body(brick, 50, (720, 200))
 sim.add_static_body(brick, 50, (40, 40))
 
-chassis = Dog_Part([(5, 0), (15, 0), (15, 20), (5, 20)], False, 0, black)
-left_wheel = Dog_Part([(0, 0), (5, 0), (5, 10), (0, 10)], False, 0, black, wheel="L")
-right_wheel = Dog_Part([(15, 0), (20, 0), (20, 10), (15, 10)], False, 0, black, wheel="R")
+chassis = Dog_Part([(0, 0), (50, 0), (50, 100), (0, 100)], (-25, 0), False, 0, brown)
+left_wheel = Dog_Part([(0, 0), (20, 0), (20, 30), (0, 30)], (-45, 0), False, 0, black, wheel="L")
+right_wheel = Dog_Part([(0, 0), (20, 0), (20, 30), (0, 30)], (25, 0), False, 0, black, wheel="R")
 
 dog_parts = [chassis, left_wheel, right_wheel]
 sim.add_dog(dog_parts)
 
 while True:
-    sim.step(0.01)
+    sim.step(0.01, 0.1, 0.1)
     sim.display_update()
