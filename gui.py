@@ -5,6 +5,7 @@ import tkinter.ttk as tk
 class Object_Interface:
     def __init__(self, gui):
         self.gui = gui
+        self.instances = []
         self.frame = Frame(gui.object_frame_main)
         self.left_frame = Frame(self.frame)
         self.right_frame = Frame(self.frame)
@@ -15,13 +16,13 @@ class Object_Interface:
         self.object_colour_label = Label(self.colour_frame, text="Object Colour", width=14, anchor=E)
         self.object_type_label = Label(self.type_frame, text="Object Type", width=14, anchor=E)
 
-        self.object_colour = Entry(self.colour_frame)
-        self.collision_type = Entry(self.type_frame)
-        self.is_sensor = BooleanVar()
-        self.object_type_is_sensor = Checkbutton(self.left_frame, text="Collisions", var=self.is_sensor)
+        self.colour_var = StringVar()
+        self.type_var = StringVar()
 
-        self.make_paintbrush = Button(self.right_frame, text="Add", width=5)
-        self.clear_all = Button(self.right_frame, text="Clear", width=5)
+        self.object_colour = Entry(self.colour_frame, textvariable=self.colour_var)
+        self.collision_type = Entry(self.type_frame, textvariable=self.type_var)
+        self.is_sensor = BooleanVar()
+        self.object_type_is_sensor = Checkbutton(self.left_frame, text="Sensor", var=self.is_sensor)
 
     def pack_all(self):
         self.gui.object_frame_main.create_window(2, (self.gui.objects.index(self)) * 95, width=379, height=93,
@@ -38,9 +39,6 @@ class Object_Interface:
         self.object_colour.pack()
         self.collision_type.pack()
         self.object_type_is_sensor.pack(side=TOP, fill=X)
-
-        self.make_paintbrush.pack(side=LEFT)
-        self.clear_all.pack(side=LEFT)
 
 
 class Rule_Interface:
@@ -62,8 +60,10 @@ class Rule_Interface:
         self.output = IntVar()
         self.output.set(0)
 
-        self.is_punish = Radiobutton(self.radio_frame, text="Punish", indicatoron=0, width=10, variable=self.output, value=0)
-        self.is_reward = Radiobutton(self.radio_frame, text="Reward", indicatoron=0, width=10, variable=self.output, value=1)
+        self.is_punish = Radiobutton(self.radio_frame, text="Punish", indicatoron=0, width=10, variable=self.output,
+                                     value=0)
+        self.is_reward = Radiobutton(self.radio_frame, text="Reward", indicatoron=0, width=10, variable=self.output,
+                                     value=1)
 
     def pack_all(self):
         self.gui.rules_frame_main.create_window(2, (self.gui.rules.index(self)) * 95, width=379, height=93,
@@ -92,6 +92,8 @@ class GUI_Window:
         self.root.title("Pyvlov's Dog - Settings")
         self.root.iconbitmap('favicon.ico')
         self.root.resizable(0, 0)
+        self.has_quit = False
+        self.root.protocol("WM_DELETE_WINDOW", self.quit)
 
         self.notebook = tk.Notebook(self.root)
         self.notebook.pack(fill=BOTH, expand=1)
@@ -173,14 +175,58 @@ class GUI_Window:
         for rule in self.rules:
             rule.pack_all()
 
+    def quit(self):
+        self.has_quit = True
+        self.root.destroy()
 
-# todo
-# try having two loops, a loop for the menu, and then once that's handled go to the pygame window
-# in the pygame one, also render a tk with a quit on it
-# when you quit go back to settings
-# stop buggery during the simulation
 
-window = GUI_Window()
-while True:
-    window.root.update_idletasks()
-    window.root.update()
+class Running_Object_Window:
+    def __init__(self, object, super_gui):
+        self.super_gui = super_gui
+        self.canvas = super_gui.object_frame
+        self.frame = Frame(self.canvas)
+
+        self.colour = object.colour_var.get()
+        self.type = object.type_var.get()
+        self.is_sensor = object.is_sensor.get()
+
+
+        self.label_frame = Frame(self.frame)
+        self.colour_label = Label(self.label_frame, text=("Colour: " + self.colour))
+        self.type_label = Label(self.label_frame, text=("Object Type: " + self.type))
+        self.is_sensor_label = Label(self.label_frame, text=("Sensor: " + str(self.is_sensor)))
+
+    def pack_all(self):
+        self.canvas.create_window(2, (self.super_gui.object_types.index(self)) * 95, width=379, height=93,
+                                  window=self.frame, anchor=NW)
+        self.label_frame.pack(side=LEFT)
+        self.colour_label.pack(anchor=E)
+        self.type_label.pack(anchor=E)
+        self.is_sensor_label.pack(anchor=E)
+
+
+class Running_GUI:
+    def __init__(self, old_gui):
+        self.root = Tk()
+        self.root.maxsize(height=700)
+        self.root.title("Pyvlov's Dog - Settings")
+        self.root.iconbitmap('favicon.ico')
+        self.root.resizable(0, 0)
+        self.has_quit = False
+        self.root.protocol("WM_DELETE_WINDOW", self.quit)
+        self.object_types = []
+        self.object_frame = Canvas(self.root, width=383, height=570, bg="#999999", scrollregion=(0, 0, 383, 1000))
+
+        self.object_frame.pack()
+
+        for object in old_gui.objects:
+            new_object = Running_Object_Window(object, self)
+            self.object_types.append(new_object)
+            new_object.pack_all()
+
+    def quit(self):
+        self.has_quit = True
+        self.root.destroy()
+
+    def get_object_list(self):
+        return self.object_types

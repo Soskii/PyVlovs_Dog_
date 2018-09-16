@@ -7,7 +7,6 @@ import random
 pygame.init()
 clock = pygame.time.Clock()
 width, height = 1280, 720
-screen = pygame.display.set_mode((width, height))
 icon = pygame.image.load("favicon.png")
 pygame.display.set_icon(icon)
 pygame.display.set_caption("Pyvlov's Dog - Simulation")
@@ -87,11 +86,11 @@ class Dog_Part:
         centre = (self.get_width() / 2 + dx, self.get_height() / 2 + dy)
         return centre
 
-    def draw(self):
+    def draw(self, simulation):
         """
         draws the individual part
         """
-        pygame.draw.polygon(screen, self.colour, self.get_global_vertices())
+        pygame.draw.polygon(simulation.screen, self.colour, self.get_global_vertices())
 
     def get_width(self):
         """
@@ -155,16 +154,16 @@ class Dog:
         part.shape.body = self.body
         self.parts.append(part)
 
-    def draw(self):
+    def draw(self, simulation):
         """
         draws each individual part of the dog into the pygame window
         """
         for part in self.parts:
-            part.draw()
+            part.draw(simulation)
         position = []
         position.append(int(self.body.position[0]))
         position.append(int(self.body.position[1]))
-        pygame.draw.circle(screen, [255, 0, 0], position, 4)
+        pygame.draw.circle(simulation.screen, [255, 0, 0], position, 4)
 
     def apply_wheel_force(self, left_rpm, right_rpm):
         """
@@ -226,7 +225,7 @@ class Object_Instance:
         """
         Draws the object on the pygame screen
         """
-        pygame.draw.polygon(screen, self.colour, self.get_vertices())
+        pygame.draw.polygon(self.simulation.screen, self.colour, self.get_vertices())
 
 
 class Simulation:
@@ -244,6 +243,8 @@ class Simulation:
         self.dog = None
         self.punish = 0
         self.reward = 0
+        self.has_quit = False
+        self.screen = pygame.display.set_mode((width, height))
 
     def set_boundaries(self):
         """
@@ -299,19 +300,20 @@ class Simulation:
         """
         This steps the space for the time specified
         """
-        self.dog.apply_wheel_force(left_rpm, right_rpm)
-        self.space.step(time)
-        self.dog.body.velocity = (0, 0)
-        self.dog.body.angular_velocity = 0
-        self.space.step(time)
-        print(self.punish, self.reward)
+        if self.dog != None:
+            self.dog.apply_wheel_force(left_rpm, right_rpm)
+            self.space.step(time)
+            self.dog.body.velocity = (0, 0)
+            self.dog.body.angular_velocity = 0
+            self.space.step(time)
+        #print(self.punish, self.reward)
         self.punish, self.reward = False, False
 
     def draw_simulation_objects(self):
         """
         This draws the shapes within the simulation into the pygame window
         """
-        screen.fill([0, 90, 0])
+        self.screen.fill([0, 90, 0])
         for object in self.simulation_objects:
             object.draw()
 
@@ -329,9 +331,9 @@ class Simulation:
         draws the dog into the pygame window
         """
         if self.dog != None:
-            self.dog.draw()
+            self.dog.draw(self)
 
-    def display_update(self):
+    def display_update(self, is_dog):
         """
         updates the pygame window
         """
@@ -349,6 +351,15 @@ class Simulation:
 
     def add_collision_handler(self, object_type_1, object_type_2, outcome):
         self.collision_handlers.append(Collision_Handler(self, object_type_1, object_type_2, outcome))
+
+    def event_queue(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.has_quit = True
+                pygame.quit()
+                break
+
+
 
 
 # black = [0, 0, 0]
