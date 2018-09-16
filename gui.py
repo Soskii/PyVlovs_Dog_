@@ -190,11 +190,14 @@ class Running_Object_Window:
         self.type = object.type_var.get()
         self.is_sensor = object.is_sensor.get()
 
-
         self.label_frame = Frame(self.frame)
         self.colour_label = Label(self.label_frame, text=("Colour: " + self.colour))
         self.type_label = Label(self.label_frame, text=("Object Type: " + self.type))
         self.is_sensor_label = Label(self.label_frame, text=("Sensor: " + str(self.is_sensor)))
+
+        self.button_frame = Frame(self.frame)
+        self.add_button = Button(self.button_frame, width=5, height=5, text="Add")
+        self.clear_button = Button(self.button_frame, width=5, height=5, text="Clear")
 
     def pack_all(self):
         self.canvas.create_window(2, (self.super_gui.object_types.index(self)) * 95, width=379, height=93,
@@ -204,6 +207,12 @@ class Running_Object_Window:
         self.type_label.pack(anchor=E)
         self.is_sensor_label.pack(anchor=E)
 
+        self.button_frame.pack(side=LEFT)
+        self.add_button.pack(side=LEFT)
+        self.clear_button.pack(side=LEFT)
+
+    def queue_instance(self, size, position):
+        self.super_gui.object_instances.append([self, size, position])
 
 class Running_GUI:
     def __init__(self, old_gui):
@@ -216,6 +225,7 @@ class Running_GUI:
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.object_types = []
         self.object_frame = Canvas(self.root, width=383, height=570, bg="#999999", scrollregion=(0, 0, 383, 1000))
+        self.object_instances = []
 
         self.object_frame.pack()
 

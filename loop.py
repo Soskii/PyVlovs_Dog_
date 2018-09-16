@@ -52,9 +52,9 @@ while True:
     while not window.has_quit:
         window.root.update_idletasks()
         window.root.update()
+    run_menu = gui.Running_GUI(window)
     sim = sm.Simulation()
     sim.add_dog(create_dog())
-    run_menu = gui.Running_GUI(window)
     while not sim.has_quit:
         wheel_values = sim.input_network()
         sim.step(0.01, wheel_values[0], wheel_values[1])
