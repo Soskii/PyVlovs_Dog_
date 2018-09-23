@@ -12,9 +12,19 @@ pygame.display.set_icon(icon)
 pygame.display.set_caption("Pyvlov's Dog - Simulation")
 
 
+# If you don't know pymunk, a body tracks the momentum and location of an object,
+#  and a shape is attached to it for collsions
+
+
 class Collision_Handler:
     """
     handles a collision. allows for localised collisions that result in something, like an ldr to act like a sensor
+
+    An object type, as described throughout, is an integer. it allows for a collision check to be done by comparing the
+    two types and determining if there is a special case involved
+
+    Presolve triggers continuously after collision and before the objects separate. It triggers the response function
+    during this.
     """
 
     def __init__(self, simulation, object1, object2, outcome):
@@ -25,7 +35,7 @@ class Collision_Handler:
 
     def response(self, arbiter, space, data):
         """
-        the function called when the collision occurs
+        the function called when the collision occurs. Modifies the simulations input into the neural network.
         """
         if self.outcome == "punish":
             self.sim.punish = True
@@ -38,6 +48,21 @@ class Dog_Part:
     """
     A component of the dog. Something like a wheel or a sensor.
 
+    shape describes the object in terms of its actual shape, rather than position. For instance a square would be
+
+    [(0, 0), (x, 0), (x, x), (0, x)]
+
+    Displacement is relative position to the body. At (0, 0) the top left corner of the shape will align with the body.
+
+    Sensor is whether or not the object is collidable or not. A non-collidable object is still able to trigger a
+    collision handler at an intersection, but the environment will ignore it in terms of physics interactions.
+
+    Collision type is an integer used for tracking interactions, as outlined above.
+
+    Colour is, the colour of the object in [R, G, B] form.
+
+    Wheel is a preset variable. If it is set to "L" the object is treated as a left wheel, and if it is set to "R" it is
+    treated as a right wheel.
     """
 
     def __init__(self, shape_vertices, displacement, sensor, collision_type, colour, wheel="N"):
@@ -130,6 +155,10 @@ class Dog_Part:
 class Dog:
     """
     The dog simulated by the simulation.
+
+    Parts is a list containing Dog_Part objects. The parts are added to the dogs body and it is as a whole treated as one
+    object by the simulation.
+
     """
 
     def __init__(self, parts):
@@ -306,7 +335,7 @@ class Simulation:
             self.dog.body.velocity = (0, 0)
             self.dog.body.angular_velocity = 0
             self.space.step(time)
-        #print(self.punish, self.reward)
+        # print(self.punish, self.reward)
         self.punish, self.reward = False, False
 
     def draw_simulation_objects(self):
@@ -344,15 +373,27 @@ class Simulation:
     def input_network(self):
         """
         polls the neural network with the input data to get the next step
+        to access the punish/reward things right now use self.punish and self.reward. they will be equal to the
+        current values
+
+        please set this up to poll the network with the inputs and
         """
         left_wheel = 0.01  # random.randint(0, 10)/1000
         right_wheel = 0.01  # random.randint(0, 10)/1000
         return (left_wheel, right_wheel)
 
     def add_collision_handler(self, object_type_1, object_type_2, outcome):
+        """
+        Creates a collision handler object in the simulation so as to allow the user to create rules between
+        object interactions
+        """
         self.collision_handlers.append(Collision_Handler(self, object_type_1, object_type_2, outcome))
 
     def event_queue(self):
+        """
+        the pygame event queue. Used to allow the user to quit the pygame window
+        :return:
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.has_quit = True
@@ -360,17 +401,30 @@ class Simulation:
                 break
 
 
+"""
+Here is a demonstration case of the simulation working. 
+This simulation is complete, it just needs integration with the GUI
+The unintegrated version of the project that allows for this is in the folder "unintegrated"
 
-
+Don't click anything in the simulation, it will freeze because windows
+will think it's not responding due to a crash not deliberately
+"""
+#
 # black = [0, 0, 0]
 # brown = [90, 90, 30]
 # yellow = [255, 255, 0]
 #
+# #Creates the simulation
+#
 # sim = Simulation()
 #
-# light = Object_Type([255, 255, 0], 255, True, 1)
+# #Defines the object type light, and creates two instances of it
+#
+# light = Object_Type([255, 255, 0], True, 1)
 # sim.add_static_body(light, 50, (640, 200))
 # sim.add_static_body(light, 50, (40, 40))
+#
+# #Creates the dog parts, as explained above
 #
 # chassis = Dog_Part([(0, 0), (50, 0), (50, 100), (0, 100)], (-25, -25), False, 0, brown)
 #
@@ -385,9 +439,14 @@ class Simulation:
 # dog_parts = [chassis, left_wheel, right_wheel, b_left_wheel, b_right_wheel, ldr, ultra_sonic]
 # sim.add_dog(dog_parts)
 #
+# #Creates a rule punishing the dog for contacting the LDR with light.
+#
 # sim.add_collision_handler(2, 1, "punish")
 #
 # while True:
+# #Feeds the neural network the current inputs, and receives the wheel rpms
 #     wheel_values = sim.input_network()
+# #Steps the simulation, and applies the wheel values to it
 #     sim.step(0.01, wheel_values[0], wheel_values[1])
-#     sim.display_update()
+# #Updates the display
+#     sim.display_update(True)

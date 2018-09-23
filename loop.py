@@ -28,6 +28,10 @@ red = [90, 0, 0]
 #
 # dog_parts = [chassis, left_wheel, right_wheel, b_left_wheel, b_right_wheel, ldr, ultra_sonic]
 
+"""
+A placeholder create dog function, to be made customisable in the gui
+"""
+
 def create_dog():
     chassis = sm.Dog_Part([(0, 0), (50, 0), (50, 100), (0, 100)], (-25, -25), False, 0, brown)
 
@@ -56,6 +60,8 @@ while True:
     sim = sm.Simulation()
     sim.add_dog(create_dog())
     while not sim.has_quit:
+        run_menu.update_gui()
+        #run_menu.
         wheel_values = sim.input_network()
         sim.step(0.01, wheel_values[0], wheel_values[1])
         sim.display_update(True)

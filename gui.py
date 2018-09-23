@@ -1,8 +1,20 @@
 from tkinter import *
 import tkinter.ttk as tk
 
+"""
+For those unfamiliar with Tk
+
+A frame is a box, similar to a DIV in html, for formatting
+A label is a text object
+Pack puts an object into its frame
+"""
+
 
 class Object_Interface:
+    """
+    The object handling the window created when the user adds an object
+    """
+
     def __init__(self, gui):
         self.gui = gui
         self.instances = []
@@ -19,12 +31,16 @@ class Object_Interface:
         self.colour_var = StringVar()
         self.type_var = StringVar()
 
+        # colour entered in 6 digit hex with leading hash "#999999"
         self.object_colour = Entry(self.colour_frame, textvariable=self.colour_var)
         self.collision_type = Entry(self.type_frame, textvariable=self.type_var)
         self.is_sensor = BooleanVar()
         self.object_type_is_sensor = Checkbutton(self.left_frame, text="Sensor", var=self.is_sensor)
 
     def pack_all(self):
+        """
+        the equivalent of a print function for this. Puts the object window into the frame so the user can interact with it
+        """
         self.gui.object_frame_main.create_window(2, (self.gui.objects.index(self)) * 95, width=379, height=93,
                                                  window=self.frame, anchor=NW)
         self.left_frame.pack(side=LEFT)
@@ -42,6 +58,10 @@ class Object_Interface:
 
 
 class Rule_Interface:
+    """
+    The same as the object interface above, but for rules instead
+    """
+
     def __init__(self, gui):
         self.gui = gui
         self.frame = Frame(gui.rules_frame_main)
@@ -66,6 +86,9 @@ class Rule_Interface:
                                      value=1)
 
     def pack_all(self):
+        """
+        packs the rule into the gui
+        """
         self.gui.rules_frame_main.create_window(2, (self.gui.rules.index(self)) * 95, width=379, height=93,
                                                 window=self.frame, anchor=NW)
         self.entries_frame.pack(side=LEFT)
@@ -87,6 +110,9 @@ class GUI_Window:
     """
 
     def __init__(self):
+        """
+        Initialises the window
+        """
         self.root = Tk()
         self.root.maxsize(height=700)
         self.root.title("Pyvlov's Dog - Settings")
@@ -95,9 +121,15 @@ class GUI_Window:
         self.has_quit = False
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
 
+        """
+        The notebook allows for tabs
+        """
         self.notebook = tk.Notebook(self.root)
         self.notebook.pack(fill=BOTH, expand=1)
 
+        """
+        The frames displayed on the notebook as each tab
+        """
         self.rule_frame = Frame(self.root, width=400, height=600)
         self.object_frame = Frame(self.root, width=400, height=600)
         self.settings_frame = Frame(self.root, width=400, height=600)
@@ -111,11 +143,18 @@ class GUI_Window:
         """
         self.rules = []
 
+        """
+        Putting together the rules window
+        """
         self.rules_frame_header = Frame(self.rule_frame, width=400, height=30)
         self.rules_frame_main = Canvas(self.rule_frame, width=383, height=570, bg="#999999")
         self.add_rule_button = Button(self.rules_frame_header, text="New Rule", command=self.add_rule)
         self.delete_rule_button = Button(self.rules_frame_header, text="Delete Rule", command=self.remove_rule)
         self.rules_frame_scrollbar = Scrollbar(self.rule_frame)
+
+        """
+        Packing it all into the gui window
+        """
 
         self.rules_frame_header.pack(fill=X)
         self.add_rule_button.pack(side=LEFT, padx=3)
@@ -131,12 +170,20 @@ class GUI_Window:
 
         self.objects = []
 
+        """
+        puts together the object window
+        """
+
         self.object_frame_header = Frame(self.object_frame, width=400, height=30)
         self.object_frame_main = Canvas(self.object_frame, width=383, height=570, bg="#999999",
                                         scrollregion=(0, 0, 383, 1000))
         self.new_object_button = Button(self.object_frame_header, text="New Object", command=self.add_object)
         self.remove_object_button = Button(self.object_frame_header, text="Delete Object", command=self.remove_object)
         self.object_frame_scrollbar = Scrollbar(self.object_frame)
+
+        """
+        
+        """
 
         self.object_frame_main.pack_propagate(0)
         self.object_frame_header.pack(fill=X)
@@ -186,33 +233,43 @@ class Running_Object_Window:
         self.canvas = super_gui.object_frame
         self.frame = Frame(self.canvas)
 
-        self.colour = object.colour_var.get()
+        self.colour_text = object.colour_var.get()
+        self.colour_rgb = hex_to_dec(self.colour_text)
+
         self.type = object.type_var.get()
         self.is_sensor = object.is_sensor.get()
 
+        self.slider = Scale(self.frame, orient=HORIZONTAL, label="Size", to=100)
+
         self.label_frame = Frame(self.frame)
-        self.colour_label = Label(self.label_frame, text=("Colour: " + self.colour))
+        self.colour_label = Label(self.label_frame, text=("Colour: " + self.colour_text))
         self.type_label = Label(self.label_frame, text=("Object Type: " + self.type))
         self.is_sensor_label = Label(self.label_frame, text=("Sensor: " + str(self.is_sensor)))
 
+        self.colour_display = Frame(self.frame, height=40, width=40, bg=self.colour_text)
+
         self.button_frame = Frame(self.frame)
-        self.add_button = Button(self.button_frame, width=5, height=5, text="Add")
-        self.clear_button = Button(self.button_frame, width=5, height=5, text="Clear")
+        self.add_button = Button(self.button_frame, width=10, height=5, text="Add", command=self.queue_instance)
+        self.clear_button = Button(self.button_frame, width=10, height=5, text="Clear")
 
     def pack_all(self):
         self.canvas.create_window(2, (self.super_gui.object_types.index(self)) * 95, width=379, height=93,
                                   window=self.frame, anchor=NW)
-        self.label_frame.pack(side=LEFT)
+        self.label_frame.pack(side=LEFT, padx=10)
         self.colour_label.pack(anchor=E)
         self.type_label.pack(anchor=E)
         self.is_sensor_label.pack(anchor=E)
 
-        self.button_frame.pack(side=LEFT)
+        self.colour_display.pack(side=LEFT, padx=40)
+        self.slider.pack()
+
+        self.button_frame.pack(side=RIGHT)
         self.add_button.pack(side=LEFT)
         self.clear_button.pack(side=LEFT)
 
-    def queue_instance(self, size, position):
-        self.super_gui.object_instances.append([self, size, position])
+    def queue_instance(self):
+        self.super_gui.new_object_instances.append([self])
+
 
 class Running_GUI:
     def __init__(self, old_gui):
@@ -226,6 +283,7 @@ class Running_GUI:
         self.object_types = []
         self.object_frame = Canvas(self.root, width=383, height=570, bg="#999999", scrollregion=(0, 0, 383, 1000))
         self.object_instances = []
+        self.new_object_instances = []
 
         self.object_frame.pack()
 
@@ -234,9 +292,38 @@ class Running_GUI:
             self.object_types.append(new_object)
             new_object.pack_all()
 
+    def update_gui(self):
+        self.root.update_idletasks()
+        self.root.update()
+
     def quit(self):
         self.has_quit = True
         self.root.destroy()
 
     def get_object_list(self):
         return self.object_types
+
+    # def add_instances(self):
+    #     for object in self.new_object_instances:
+
+
+
+def hex_to_dec(hex_code):
+    conversion_dict = {"A": 10, "B": 11, "C": 12, "D":13, "E":14, "F":15,
+                       "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15}
+    hex_code = hex_code[1:]
+    r_h_value = hex_code[:2]
+    g_h_value = hex_code[2:4]
+    b_h_value = hex_code[4:6]
+    hex_rgb = [r_h_value, g_h_value, b_h_value]
+    dec_rgb = []
+    for hex in hex_rgb:
+        dec_value = 0
+        for integer, value in enumerate(hex):
+            if value in conversion_dict:
+                value = conversion_dict[value]
+            else:
+                value = int(value)
+            dec_value += value*(16**(1-integer))
+        dec_rgb.append(dec_value)
+    return dec_rgb
