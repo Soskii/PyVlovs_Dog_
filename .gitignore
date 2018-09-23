@@ -1,2 +1,4 @@
 .idea
 venv
+__pycache__/gui.cpython-35.pyc
+*.pyc
