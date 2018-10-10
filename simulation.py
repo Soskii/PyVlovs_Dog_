@@ -163,7 +163,7 @@ class Dog:
 
     def __init__(self, parts):
         # TODO Dog Stuff
-        self.body = pymunk.Body(1, 1)
+        self.body = pymunk.Body(1, 100)
         self.body.position = (width / 2, height / 2)
         self.parts = []
         self.left_wheels = []
@@ -182,6 +182,7 @@ class Dog:
         """
         part.shape.body = self.body
         self.parts.append(part)
+        #TODO moment of inertia so it doesn't spin
 
     def draw(self, simulation):
         """
@@ -378,8 +379,8 @@ class Simulation:
 
         please set this up to poll the network with the inputs and
         """
-        left_wheel = 0.01  # random.randint(0, 10)/1000
-        right_wheel = 0.01  # random.randint(0, 10)/1000
+        left_wheel = 0.1  # random.randint(0, 10)/1000
+        right_wheel = 0.05  # random.randint(0, 10)/1000
         return (left_wheel, right_wheel)
 
     def add_collision_handler(self, object_type_1, object_type_2, outcome):
