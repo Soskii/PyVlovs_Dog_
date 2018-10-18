@@ -32,10 +32,10 @@ class Wid:
             if preset != None:
                 self.var.set(int(preset))
             self.widget = Checkbutton(self.frame, variable=var)
-        self.label = Label(self.frame, text=self.name, width=10, anchor=E)
+        self.label = Label(self.frame, text=self.name, width=12, anchor=E)
 
     def pack(self):
-        self.frame.pack(fill=X, pady=1)
+        self.frame.pack(fill=X, pady=1, padx=3)
         self.label.pack(side=LEFT)
         self.widget.pack(side=LEFT, fill=X)
 

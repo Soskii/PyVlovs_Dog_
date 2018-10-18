@@ -198,7 +198,22 @@ class GUI_Window:
         """
         the simulator settings bit
         """
-        self.simulation_speed = Scale(self.settings_frame)
+        self.sim_speed_frame = Frame(self.settings_frame)
+        self.sim_speed_label = Label(self.sim_speed_frame, text="Simulation Speed")
+        self.sim_speed = Scale(self.sim_speed_frame, orient=HORIZONTAL)
+
+        self.dog_location_frame = Frame(self.settings_frame)
+        self.dog_location_entry = Entry(self.dog_location_frame, width=50)
+        self.dog_location_entry.insert(END, "saves\\Default")
+        self.dog_location_label = Label(self.dog_location_frame, text="Dog File Path")
+
+        self.sim_speed_frame.pack()
+        self.sim_speed_label.pack(side=LEFT)
+        self.sim_speed.pack(side=LEFT)
+
+        self.dog_location_frame.pack(fill=X, padx=5)
+        self.dog_location_label.pack(side=LEFT)
+        self.dog_location_entry.pack(side=LEFT, fill=X)
 
     def add_object(self):
         new_object_window = Object_Interface(self)
@@ -307,9 +322,8 @@ class Running_GUI:
     #     for object in self.new_object_instances:
 
 
-
 def hex_to_dec(hex_code):
-    conversion_dict = {"A": 10, "B": 11, "C": 12, "D":13, "E":14, "F":15,
+    conversion_dict = {"A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15,
                        "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15}
     hex_code = hex_code[1:]
     r_h_value = hex_code[:2]
@@ -324,6 +338,6 @@ def hex_to_dec(hex_code):
                 value = conversion_dict[value]
             else:
                 value = int(value)
-            dec_value += value*(16**(1-integer))
+            dec_value += value * (16 ** (1 - integer))
         dec_rgb.append(dec_value)
     return dec_rgb

@@ -1,5 +1,6 @@
 import simulation as sm
 import gui
+import ast
 
 black = [0, 0, 0]
 brown = [51, 51, 0]
@@ -32,19 +33,18 @@ red = [90, 0, 0]
 A placeholder create dog function, to be made customisable in the gui
 """
 
-def create_dog():
-    chassis = sm.Dog_Part([(0, 0), (50, 0), (50, 100), (0, 100)], (-25, -25), False, 0, brown)
+def convert(string):
+    return ast.literal_eval(string)
 
-    left_wheel = sm.Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (-36, -20), False, 0, black, wheel="L")
-    right_wheel = sm.Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (26, -20), False, 0, black, wheel="R")
-    b_left_wheel = sm.Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (-36, 35), False, 0, black, wheel="L")
-    b_right_wheel = sm.Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (26, 35), False, 0, black, wheel="R")
-
-    ldr = sm.Dog_Part([(0, 0), (50, 0), (50, 6), (0, 6)], (-25, -35), True, 2, yellow)
-    ultra_sonic = sm.Dog_Part([(0, 0), (6, 0), (6, 40), (0, 40)], (-3, -65), True, 3, black)
-
-    dog_parts = [chassis, left_wheel, right_wheel, b_left_wheel, b_right_wheel, ldr, ultra_sonic]
-    return dog_parts
+def create_dog(directory):
+    parts = []
+    text = open(directory+"\\data.txt").read()
+    text_parts = text.split("#end#")
+    del text_parts[-1]
+    for part in text_parts:
+        att = part.strip().split("\n")
+        parts.append(sm.Dog_Part(convert(att[1]), convert(att[2]), convert(att[3]), convert(att[4]), convert(att[5]), wheel=att[6]))
+    return parts
 
 #
 # sim.add_collision_handler(2, 1, "punish")
@@ -54,14 +54,14 @@ def create_dog():
 while True:
     window = gui.GUI_Window()
     while not window.has_quit:
+        location = window.dog_location_entry.get()
         window.root.update_idletasks()
         window.root.update()
     run_menu = gui.Running_GUI(window)
     sim = sm.Simulation()
-    sim.add_dog(create_dog())
+    sim.add_dog(create_dog(location))
     while not sim.has_quit:
         run_menu.update_gui()
-        #run_menu.
         wheel_values = sim.input_network()
         sim.step(0.01, wheel_values[0], wheel_values[1])
         sim.display_update(True)

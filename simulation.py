@@ -78,6 +78,8 @@ class Dog_Part:
         self.shape.collision_type = self.collision_type
         self.shape.sensor = self.sensor
 
+        self.moment = pymunk.moment_for_poly(1, self.shape_vertices)
+
     def get_local_vertices(self):
         """
         Adds the displacement of the shape to the shapes vertices to return the local coordinates of it
@@ -168,6 +170,7 @@ class Dog:
         self.parts = []
         self.left_wheels = []
         self.right_wheels = []
+        self.moment = 0
         for part in parts:
             self.attach_part(part)
             self.parts.append(part)
@@ -182,7 +185,7 @@ class Dog:
         """
         part.shape.body = self.body
         self.parts.append(part)
-        #TODO moment of inertia so it doesn't spin
+        self.moment += part.moment
 
     def draw(self, simulation):
         """
