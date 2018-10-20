@@ -241,12 +241,22 @@ class GUI_Window:
         self.has_quit = True
         self.root.destroy()
 
+class Object_Type:
+    """
+    An object type for the purposes of the simulation
+    """
+
+    def __init__(self, colour, collide, collision_type):
+        self.colour = colour
+        self.collide = int(collide)
+        self.collision_type = int(collision_type)
 
 class Running_Object_Window:
     def __init__(self, object, super_gui):
         self.super_gui = super_gui
         self.canvas = super_gui.object_frame
         self.frame = Frame(self.canvas)
+
 
         self.colour_text = object.colour_var.get()
         self.colour_rgb = hex_to_dec(self.colour_text)
@@ -264,8 +274,10 @@ class Running_Object_Window:
         self.colour_display = Frame(self.frame, height=40, width=40, bg=self.colour_text)
 
         self.button_frame = Frame(self.frame)
-        self.add_button = Button(self.button_frame, width=10, height=5, text="Add", command=self.queue_instance)
+        self.add_button = Button(self.button_frame, width=10, height=5, text="Add", command=self.set_active)
         self.clear_button = Button(self.button_frame, width=10, height=5, text="Clear")
+
+        self.template = Object_Type(self.colour_rgb, self.is_sensor, self.type)
 
     def pack_all(self):
         self.canvas.create_window(2, (self.super_gui.object_types.index(self)) * 95, width=379, height=93,
@@ -282,8 +294,11 @@ class Running_Object_Window:
         self.add_button.pack(side=LEFT)
         self.clear_button.pack(side=LEFT)
 
+    def set_active(self):
+        self.super_gui.active_brush = self
+
     def queue_instance(self):
-        self.super_gui.new_object_instances.append([self])
+        self.super_gui.new_object_instances.append([self.template, self.slider.get(), (50, 50)])
 
 
 class Running_GUI:
@@ -299,6 +314,7 @@ class Running_GUI:
         self.object_frame = Canvas(self.root, width=383, height=570, bg="#999999", scrollregion=(0, 0, 383, 1000))
         self.object_instances = []
         self.new_object_instances = []
+        self.active_brush = None
 
         self.object_frame.pack()
 
@@ -308,6 +324,7 @@ class Running_GUI:
             new_object.pack_all()
 
     def update_gui(self):
+        #todo add a function to make new object instances
         self.root.update_idletasks()
         self.root.update()
 

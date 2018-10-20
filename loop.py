@@ -62,8 +62,12 @@ while True:
     sim.add_dog(create_dog(location))
     while not sim.has_quit:
         run_menu.update_gui()
+        for click in sim.current_clicks:
+            sim.add_static_body(run_menu.active_brush, run_menu.active_brush.slider.get(), click)
+        sim.current_clicks = []
         wheel_values = sim.input_network()
-        sim.step(0.01, wheel_values[0], wheel_values[1])
+        sim.step(1/180, wheel_values[0], wheel_values[1])
+        run_menu.new_object_instances = []
         sim.display_update(True)
         sim.event_queue()
         if sim.has_quit:

@@ -165,12 +165,12 @@ class Dog:
 
     def __init__(self, parts):
         # TODO Dog Stuff
-        self.body = pymunk.Body(1, 100)
+        self.moment = 1
+        self.body = pymunk.Body(1, 1)
         self.body.position = (width / 2, height / 2)
         self.parts = []
         self.left_wheels = []
         self.right_wheels = []
-        self.moment = 0
         for part in parts:
             self.attach_part(part)
             self.parts.append(part)
@@ -178,6 +178,7 @@ class Dog:
                 self.left_wheels.append(part)
             if part.wheel == "R":
                 self.right_wheels.append(part)
+        self.body.moment = self.moment
 
     def attach_part(self, part):
         """
@@ -196,7 +197,7 @@ class Dog:
         position = []
         position.append(int(self.body.position[0]))
         position.append(int(self.body.position[1]))
-        pygame.draw.circle(simulation.screen, [255, 0, 0], position, 4)
+        # pygame.draw.circle(simulation.screen, [255, 0, 0], position, 4)
 
     def apply_wheel_force(self, left_rpm, right_rpm):
         """
@@ -211,15 +212,15 @@ class Dog:
             part.apply_force((0.00, displacement))
 
 
-class Object_Type:
-    """
-    An object type for the purposes of the simulation
-    """
-
-    def __init__(self, colour, collide, collision_type):
-        self.colour = colour
-        self.collide = collide
-        self.collision_type = collision_type
+# class Object_Type:
+#     """
+#     An object type for the purposes of the simulation
+#     """
+#
+#     def __init__(self, colour, collide, collision_type):
+#         self.colour = colour
+#         self.collide = collide
+#         self.collision_type = collision_type
 
 
 class Object_Instance:
@@ -229,9 +230,9 @@ class Object_Instance:
 
     def __init__(self, type, size, position, simulation):
         # Instantiates the basic components of the object
-        self.colour = type.colour
-        self.collide = type.collide
-        self.collision = type.collision_type
+        self.colour = type.colour_rgb
+        self.collide = int(type.is_sensor)
+        self.collision = int(type.type)
         self.size = size
         self.position = position
         self.simulation = simulation
@@ -241,7 +242,9 @@ class Object_Instance:
         self.body.position = self.position
         self.shape = pymunk.Poly.create_box(self.body, (self.size, self.size), radius=1)
         self.shape.collision_type = self.collision
+        self.shape.sensor = self.collide
         self.simulation.space.add(self.body, self.shape)
+
 
     def get_vertices(self):
         """
@@ -278,6 +281,7 @@ class Simulation:
         self.reward = 0
         self.has_quit = False
         self.screen = pygame.display.set_mode((width, height))
+        self.current_clicks = []
 
     def set_boundaries(self):
         """
@@ -333,12 +337,12 @@ class Simulation:
         """
         This steps the space for the time specified
         """
-        if self.dog != None:
-            self.dog.apply_wheel_force(left_rpm, right_rpm)
-            self.space.step(time)
-            self.dog.body.velocity = (0, 0)
-            self.dog.body.angular_velocity = 0
-            self.space.step(time)
+
+        self.dog.apply_wheel_force(left_rpm, right_rpm)
+        self.space.step(time)
+        self.dog.body.velocity = (0, 0)
+        self.dog.body.angular_velocity = 0
+        self.space.step(time)
         # print(self.punish, self.reward)
         self.punish, self.reward = False, False
 
@@ -383,7 +387,7 @@ class Simulation:
         please set this up to poll the network with the inputs and
         """
         left_wheel = 0.1  # random.randint(0, 10)/1000
-        right_wheel = 0.05  # random.randint(0, 10)/1000
+        right_wheel = 0.5  # random.randint(0, 10)/1000
         return (left_wheel, right_wheel)
 
     def add_collision_handler(self, object_type_1, object_type_2, outcome):
@@ -402,7 +406,8 @@ class Simulation:
             if event.type == pygame.QUIT:
                 self.has_quit = True
                 pygame.quit()
-                break
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.current_clicks.append(pygame.mouse.get_pos())
 
 
 """
