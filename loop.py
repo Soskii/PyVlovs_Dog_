@@ -60,7 +60,7 @@ while True:
     run_menu = gui.Running_GUI(window)
     sim = sm.Simulation()
     sim.add_dog(create_dog(location))
-    while not sim.has_quit:
+    while not sim.has_quit and not run_menu.has_quit:
         run_menu.update_gui()
         for click in sim.current_clicks:
             sim.add_static_body(run_menu.active_brush, run_menu.active_brush.slider.get(), click)
@@ -72,4 +72,7 @@ while True:
         sim.event_queue()
         if sim.has_quit:
             run_menu.quit()
+    if not sim.has_quit:
+        sim.quit()
+
 

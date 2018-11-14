@@ -396,6 +396,7 @@ class Simulation:
         object interactions
         """
         self.collision_handlers.append(Collision_Handler(self, object_type_1, object_type_2, outcome))
+        print(self.collision_handlers)
 
     def event_queue(self):
         """
@@ -408,6 +409,9 @@ class Simulation:
                 pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.current_clicks.append(pygame.mouse.get_pos())
+
+    def quit(self):
+        pygame.quit()
 
 
 """
