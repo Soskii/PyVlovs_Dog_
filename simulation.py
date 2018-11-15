@@ -8,7 +8,7 @@ import importlib.machinery
 pygame.init()
 clock = pygame.time.Clock()
 width, height = 1280, 720
-icon = pygame.image.load("favicon.png")
+icon = pygame.image.load("assets/favicon.png")
 pygame.display.set_icon(icon)
 pygame.display.set_caption("Pyvlov's Dog - Simulation")
 

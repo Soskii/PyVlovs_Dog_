@@ -119,7 +119,7 @@ class GUI_Window:
         self.root = Tk()
         self.root.maxsize(height=700)
         self.root.title("Pyvlov's Dog - Settings")
-        self.root.iconbitmap('favicon.ico')
+        self.root.iconbitmap('assets/favicon.ico')
         self.root.resizable(0, 0)
         self.has_quit = False
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
@@ -319,7 +319,7 @@ class Running_GUI:
         self.root = Tk()
         self.root.maxsize(height=700)
         self.root.title("Pyvlov's Dog - Settings")
-        self.root.iconbitmap('favicon.ico')
+        self.root.iconbitmap('assets/favicon.ico')
         self.root.resizable(0, 0)
         self.has_quit = False
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
