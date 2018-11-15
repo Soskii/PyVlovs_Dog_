@@ -37,9 +37,9 @@ class Collision_Handler:
         """
         the function called when the collision occurs. Modifies the simulations input into the neural network.
         """
-        if self.outcome == "punish":
+        if self.outcome == 0:
             self.sim.punish = True
-        if self.outcome == "reward":
+        if self.outcome == 1:
             self.sim.reward = True
         return True
 
@@ -343,8 +343,6 @@ class Simulation:
         self.dog.body.velocity = (0, 0)
         self.dog.body.angular_velocity = 0
         self.space.step(time)
-        # print(self.punish, self.reward)
-        self.punish, self.reward = False, False
 
     def draw_simulation_objects(self):
         """
@@ -396,7 +394,6 @@ class Simulation:
         object interactions
         """
         self.collision_handlers.append(Collision_Handler(self, object_type_1, object_type_2, outcome))
-        print(self.collision_handlers)
 
     def event_queue(self):
         """

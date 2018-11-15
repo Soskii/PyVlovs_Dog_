@@ -74,8 +74,11 @@ class Rule_Interface:
         self.object1_label = Label(self.object1_frame, text="Object 1", width=14, anchor=E)
         self.object2_label = Label(self.object2_frame, text="Object 2", width=14, anchor=E)
 
-        self.object_1 = Entry(self.object1_frame)
-        self.object_2 = Entry(self.object2_frame)
+        self.first_obj = StringVar()
+        self.second_obj = StringVar()
+
+        self.object_1 = Entry(self.object1_frame, textvariable=self.first_obj)
+        self.object_2 = Entry(self.object2_frame, textvariable=self.second_obj)
 
         self.output = IntVar()
         self.output.set(0)

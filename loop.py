@@ -60,6 +60,9 @@ while True:
     run_menu = gui.Running_GUI(window)
     sim = sm.Simulation()
     sim.add_dog(create_dog(location))
+    for rule in window.rules:
+        obj_1, obj_2, outcome = int(rule.first_obj.get()), int(rule.second_obj.get()), rule.output.get()
+        sim.add_collision_handler(obj_1, obj_2, outcome)
     while not sim.has_quit and not run_menu.has_quit:
         run_menu.update_gui()
         for click in sim.current_clicks:
@@ -70,6 +73,7 @@ while True:
         run_menu.new_object_instances = []
         sim.display_update(True)
         sim.event_queue()
+        sim.punish, sim.reward = False, False
         if sim.has_quit:
             run_menu.quit()
     if not sim.has_quit:
