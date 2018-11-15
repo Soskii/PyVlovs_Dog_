@@ -203,12 +203,18 @@ class GUI_Window:
         """
         self.sim_speed_frame = Frame(self.settings_frame)
         self.sim_speed_label = Label(self.sim_speed_frame, text="Simulation Speed")
-        self.sim_speed = Scale(self.sim_speed_frame, orient=HORIZONTAL)
+        self.sim_speed_var = StringVar()
+        self.sim_speed = Scale(self.sim_speed_frame, orient=HORIZONTAL, variable=self.sim_speed_var, from_=0.01, to=1, resolution=0.01)
 
         self.dog_location_frame = Frame(self.settings_frame)
-        self.dog_location_entry = Entry(self.dog_location_frame, width=50)
+        self.dog_location_entry = Entry(self.dog_location_frame, width=40)
         self.dog_location_entry.insert(END, "saves\\Default")
-        self.dog_location_label = Label(self.dog_location_frame, text="Dog File Path")
+        self.dog_location_label = Label(self.dog_location_frame, text="Dog File Path", width=15, anchor=E)
+
+        self.network_location_frame = Frame(self.settings_frame)
+        self.network_location_entry = Entry(self.network_location_frame, width=40)
+        self.network_location_entry.insert(END, "networks\\placeholder_network.py")
+        self.network_location_label = Label(self.network_location_frame, text="Network File Path", width=15, anchor=E)
 
         self.sim_speed_frame.pack()
         self.sim_speed_label.pack(side=LEFT)
@@ -217,6 +223,10 @@ class GUI_Window:
         self.dog_location_frame.pack(fill=X, padx=5)
         self.dog_location_label.pack(side=LEFT)
         self.dog_location_entry.pack(side=LEFT, fill=X)
+
+        self.network_location_frame.pack(fill=X, padx=5)
+        self.network_location_label.pack(side=LEFT)
+        self.network_location_entry.pack(side=LEFT, fill=X)
 
     def add_object(self):
         new_object_window = Object_Interface(self)
@@ -278,7 +288,7 @@ class Running_Object_Window:
 
         self.button_frame = Frame(self.frame)
         self.add_button = Button(self.button_frame, width=10, height=5, text="Add", command=self.set_active)
-        self.clear_button = Button(self.button_frame, width=10, height=5, text="Clear")
+        #self.clear_button = Button(self.button_frame, width=10, height=5, text="Clear")
 
         self.template = Object_Type(self.colour_rgb, self.is_sensor, self.type)
 
@@ -295,7 +305,7 @@ class Running_Object_Window:
 
         self.button_frame.pack(side=RIGHT)
         self.add_button.pack(side=LEFT)
-        self.clear_button.pack(side=LEFT)
+        #self.clear_button.pack(side=LEFT)
 
     def set_active(self):
         self.super_gui.active_brush = self

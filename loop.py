@@ -54,12 +54,16 @@ def create_dog(directory):
 while True:
     window = gui.GUI_Window()
     while not window.has_quit:
-        location = window.dog_location_entry.get()
+        dog_location = window.dog_location_entry.get()
+        network_location = window.network_location_entry.get()
         window.root.update_idletasks()
         window.root.update()
     run_menu = gui.Running_GUI(window)
     sim = sm.Simulation()
-    sim.add_dog(create_dog(location))
+    sim.set_network(network_location)
+    sim.add_dog(create_dog(dog_location))
+    sim_speed = float(window.sim_speed_var.get())
+    print(sim_speed)
     for rule in window.rules:
         obj_1, obj_2, outcome = int(rule.first_obj.get()), int(rule.second_obj.get()), rule.output.get()
         sim.add_collision_handler(obj_1, obj_2, outcome)
@@ -69,7 +73,7 @@ while True:
             sim.add_static_body(run_menu.active_brush, run_menu.active_brush.slider.get(), click)
         sim.current_clicks = []
         wheel_values = sim.input_network()
-        sim.step(1/180, wheel_values[0], wheel_values[1])
+        sim.step(sim_speed, wheel_values[0], wheel_values[1])
         run_menu.new_object_instances = []
         sim.display_update(True)
         sim.event_queue()

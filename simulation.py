@@ -1,6 +1,7 @@
 import pymunk
 import pygame
 import math
+import importlib.machinery
 import random
 
 # PYGAME INITIALISE
@@ -245,7 +246,6 @@ class Object_Instance:
         self.shape.sensor = self.collide
         self.simulation.space.add(self.body, self.shape)
 
-
     def get_vertices(self):
         """
         Finds the local coordinates of the shape, adds the body's position to them and returns it as a list.
@@ -282,6 +282,13 @@ class Simulation:
         self.has_quit = False
         self.screen = pygame.display.set_mode((width, height))
         self.current_clicks = []
+
+    def set_network(self, path):
+        self.network_path = path
+        if "\\" in path:
+            name = path.split("\\")[-1]
+        loader = importlib.machinery.SourceFileLoader(name, path)
+        self.network = loader.load_module()
 
     def set_boundaries(self):
         """
@@ -381,12 +388,9 @@ class Simulation:
         polls the neural network with the input data to get the next step
         to access the punish/reward things right now use self.punish and self.reward. they will be equal to the
         current values
-
-        please set this up to poll the network with the inputs and
         """
-        left_wheel = 0.1  # random.randint(0, 10)/1000
-        right_wheel = 0.5  # random.randint(0, 10)/1000
-        return (left_wheel, right_wheel)
+
+        return self.network.interact(self.punish, self.reward)
 
     def add_collision_handler(self, object_type_1, object_type_2, outcome):
         """
