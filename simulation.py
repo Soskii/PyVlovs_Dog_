@@ -340,16 +340,16 @@ class Simulation:
         """
         self.space.add(object)
 
-    def step(self, time, left_rpm, right_rpm):
+    def step(self, time):
         """
         This steps the space for the time specified
         """
-
-        self.dog.apply_wheel_force(left_rpm, right_rpm)
+        self.space.step(time)
+        wheel_vels = self.input_network()
+        self.dog.apply_wheel_force(wheel_vels[0], wheel_vels[1])
         self.space.step(time)
         self.dog.body.velocity = (0, 0)
         self.dog.body.angular_velocity = 0
-        self.space.step(time)
 
     def draw_simulation_objects(self):
         """
