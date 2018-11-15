@@ -2,7 +2,7 @@ import pymunk
 import pygame
 import math
 import importlib.machinery
-import random
+
 
 # PYGAME INITIALISE
 pygame.init()
