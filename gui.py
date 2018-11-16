@@ -122,6 +122,7 @@ class GUI_Window:
         self.root.iconbitmap('assets/favicon.ico')
         self.root.resizable(0, 0)
         self.has_quit = False
+        self.exiting = False
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
 
         """
@@ -216,6 +217,8 @@ class GUI_Window:
         self.network_location_entry.insert(END, "networks\\placeholder_network.py")
         self.network_location_label = Label(self.network_location_frame, text="Network File Path", width=15, anchor=E)
 
+        self.quit_button = Button(self.settings_frame, text="Quit", command=self.exit)
+
         self.sim_speed_frame.pack()
         self.sim_speed_label.pack(side=LEFT)
         self.sim_speed.pack(side=LEFT)
@@ -227,6 +230,7 @@ class GUI_Window:
         self.network_location_frame.pack(fill=X, padx=5)
         self.network_location_label.pack(side=LEFT)
         self.network_location_entry.pack(side=LEFT, fill=X)
+        self.quit_button.pack()
 
     def add_object(self):
         new_object_window = Object_Interface(self)
@@ -253,6 +257,10 @@ class GUI_Window:
     def quit(self):
         self.has_quit = True
         self.root.destroy()
+
+    def exit(self):
+        self.exiting = True
+        self.quit()
 
 class Object_Type:
     """

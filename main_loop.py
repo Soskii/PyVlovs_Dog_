@@ -53,6 +53,8 @@ while True:
         network_location = window.network_location_entry.get()
         window.root.update_idletasks()
         window.root.update()
+    if window.exiting:
+        break
     run_menu = gui.Running_GUI(window)
     sim = sm.Simulation()
     sim.set_network(network_location)
