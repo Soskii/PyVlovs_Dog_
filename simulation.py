@@ -287,6 +287,8 @@ class Simulation:
         self.network_path = path
         if "\\" in path:
             name = path.split("\\")[-1]
+        else:
+            name = path
         loader = importlib.machinery.SourceFileLoader(name, path)
         self.network = loader.load_module()
 

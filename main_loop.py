@@ -46,11 +46,6 @@ def create_dog(directory):
         parts.append(sm.Dog_Part(convert(att[1]), convert(att[2]), convert(att[3]), convert(att[4]), convert(att[5]), wheel=att[6]))
     return parts
 
-#
-# sim.add_collision_handler(2, 1, "punish")
-# sim.add_collision_handler(3, 4, "reward")
-
-
 while True:
     window = gui.GUI_Window()
     while not window.has_quit:
@@ -70,7 +65,8 @@ while True:
     while not sim.has_quit and not run_menu.has_quit:
         run_menu.update_gui()
         for click in sim.current_clicks:
-            sim.add_static_body(run_menu.active_brush, run_menu.active_brush.slider.get(), click)
+            if run_menu.active_brush != None:
+                sim.add_static_body(run_menu.active_brush, run_menu.active_brush.slider.get(), click)
         sim.current_clicks = []
         sim.step(sim_speed)
         run_menu.new_object_instances = []
