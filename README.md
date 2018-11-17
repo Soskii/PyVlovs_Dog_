@@ -6,7 +6,7 @@ The software package involves a user friendly simulation software, a dog creatio
 
 ## FAQ
 ### Why is the colour I am entering being turned to black/causing an error?
-Currently, the software uses two different colour formats. In the dog creation kit colours are entered in the [R, G, B] format, with each of the codes being a decimal value between 0 and 255. In the simulation's object creation window, colour is entered as #RRGGBB format, with each of the 2 digit codes in hexadecimal, case insensitive. 
+Colour is entered into the program as a six-digit hexadecimal string, with a leading hash (#RRGGBB). Inputing it in a different format will result in errors. 
 
 ### What do you mean by sensor?
 Sensor is terminology borrowed from PyMunk, referring to whether or not an object is treated as solid. An object marked as sensor will allow objects to pass through it, but will still trigger any collision handlers attached to it.
