@@ -9,7 +9,7 @@ root = Tk()
 root.minsize(height=600, width=800)
 root.resizable(0, 0)
 root.title("Pyvlov's Dog - Dog Generator")
-root.iconbitmap('favicon.ico')
+root.iconbitmap('assets/favicon.ico')
 
 #####objects#####
 
@@ -85,13 +85,34 @@ def part_rem():
     # parts_window.configure(scrollregion=(0, 0, 383, 500 if len(parts) < 6 else len(parts) * 100))
 
 
+def hex_to_dec(hex_code):
+    conversion_dict = {"A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15,
+                       "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15}
+    hex_code = hex_code[1:]
+    r_h_value = hex_code[:2]
+    g_h_value = hex_code[2:4]
+    b_h_value = hex_code[4:6]
+    hex_rgb = [r_h_value, g_h_value, b_h_value]
+    dec_rgb = []
+    for hex in hex_rgb:
+        dec_value = 0
+        for integer, value in enumerate(hex):
+            if value in conversion_dict:
+                value = conversion_dict[value]
+            else:
+                value = int(value)
+            dec_value += value * (16 ** (1 - integer))
+        dec_rgb.append(dec_value)
+    return tuple(dec_rgb)
+
+
 def img_gen():
     loc = location.get()
     global im
     im = Image.new("RGBA", (383, 570), (0, 0, 0, 0))
     draw = ImageDraw.Draw(im)
     for part in parts:
-        c_g = ast.literal_eval(part.colour.get())
+        c_g = hex_to_dec(part.colour.get())
         vertices = ast.literal_eval(part.shape_vertices.get())
         displacement = ast.literal_eval(part.displacement.get())
         displaced_vertices = []
@@ -100,7 +121,6 @@ def img_gen():
             new_x = point[0] + dx + 200
             new_y = point[1] + dy + 275
             displaced_vertices.append((new_x, new_y))
-
 
         draw.polygon(displaced_vertices, c_g)
         global ph
