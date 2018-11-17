@@ -345,7 +345,6 @@ class Running_GUI:
             new_object.pack_all()
 
     def update_gui(self):
-        #todo add a function to make new object instances
         self.root.update_idletasks()
         self.root.update()
 

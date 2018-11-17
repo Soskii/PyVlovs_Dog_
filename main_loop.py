@@ -43,7 +43,7 @@ def create_dog(directory):
     del text_parts[-1]
     for part in text_parts:
         att = part.strip().split("\n")
-        parts.append(sm.Dog_Part(convert(att[1]), convert(att[2]), convert(att[3]), convert(att[4]), convert(att[5]), wheel=att[6]))
+        parts.append(sm.Dog_Part(convert(att[1]), convert(att[2]), convert(att[3]), convert(att[4]), att[5], wheel=att[6]))
     return parts
 
 while True:

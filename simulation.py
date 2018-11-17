@@ -16,6 +16,27 @@ pygame.display.set_caption("Pyvlov's Dog - Simulation")
 # If you don't know pymunk, a body tracks the momentum and location of an object,
 #  and a shape is attached to it for collsions
 
+def hex_to_dec(hex_code):
+    conversion_dict = {"A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15,
+                       "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15}
+    hex_code = hex_code[1:]
+    r_h_value = hex_code[:2]
+    g_h_value = hex_code[2:4]
+    b_h_value = hex_code[4:6]
+    hex_rgb = [r_h_value, g_h_value, b_h_value]
+    dec_rgb = []
+    for hex in hex_rgb:
+        dec_value = 0
+        for integer, value in enumerate(hex):
+            if value in conversion_dict:
+                value = conversion_dict[value]
+            else:
+                value = int(value)
+            dec_value += value * (16 ** (1 - integer))
+        dec_rgb.append(dec_value)
+    return tuple(dec_rgb)
+
+
 
 class Collision_Handler:
     """
@@ -72,7 +93,7 @@ class Dog_Part:
         self.local_coordinates = self.get_local_vertices()
         self.sensor = sensor
         self.collision_type = collision_type
-        self.colour = colour
+        self.colour = hex_to_dec(colour)
         self.wheel = wheel
 
         self.shape = pymunk.Poly(None, self.local_coordinates, radius=0.5)
@@ -165,7 +186,6 @@ class Dog:
     """
 
     def __init__(self, parts):
-        # TODO Dog Stuff
         self.moment = 1
         self.body = pymunk.Body(1, 1)
         self.body.position = (width / 2, height / 2)

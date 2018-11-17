@@ -3,7 +3,6 @@ from PIL import Image, ImageDraw, ImageTk
 import os
 import ast
 
-# TODO add options for centre of dog and
 
 root = Tk()
 root.minsize(height=600, width=800)
