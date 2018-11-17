@@ -217,7 +217,7 @@ class GUI_Window:
         self.network_location_entry.insert(END, "networks\\placeholder_network.py")
         self.network_location_label = Label(self.network_location_frame, text="Network File Path", width=15, anchor=E)
 
-        self.quit_button = Button(self.settings_frame, text="Quit", command=self.exit)
+        self.quit_button = Button(self.settings_frame, text="Quit", command=self.exit, width=20, bg="#aa0000", fg="#ffffff")
 
         self.sim_speed_frame.pack()
         self.sim_speed_label.pack(side=LEFT)
@@ -230,7 +230,7 @@ class GUI_Window:
         self.network_location_frame.pack(fill=X, padx=5)
         self.network_location_label.pack(side=LEFT)
         self.network_location_entry.pack(side=LEFT, fill=X)
-        self.quit_button.pack()
+        self.quit_button.pack(side=BOTTOM, pady=20)
 
     def add_object(self):
         new_object_window = Object_Interface(self)
