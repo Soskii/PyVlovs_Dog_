@@ -296,7 +296,6 @@ class Running_Object_Window:
 
         self.button_frame = Frame(self.frame)
         self.add_button = Button(self.button_frame, width=10, height=5, text="Add", command=self.set_active)
-        #self.clear_button = Button(self.button_frame, width=10, height=5, text="Clear")
 
         self.template = Object_Type(self.colour_rgb, self.is_sensor, self.type)
 
@@ -313,7 +312,6 @@ class Running_Object_Window:
 
         self.button_frame.pack(side=RIGHT)
         self.add_button.pack(side=LEFT)
-        #self.clear_button.pack(side=LEFT)
 
     def set_active(self):
         self.super_gui.active_brush = self
@@ -354,9 +352,6 @@ class Running_GUI:
 
     def get_object_list(self):
         return self.object_types
-
-    # def add_instances(self):
-    #     for object in self.new_object_instances:
 
 
 def hex_to_dec(hex_code):

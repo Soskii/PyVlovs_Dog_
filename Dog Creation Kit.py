@@ -81,7 +81,6 @@ def part_rem():
     for obj in parts:
         obj.draw()
 
-    # parts_window.configure(scrollregion=(0, 0, 383, 500 if len(parts) < 6 else len(parts) * 100))
 
 
 def hex_to_dec(hex_code):
@@ -128,7 +127,6 @@ def img_gen():
     im.save(loc + "\\img.png")
     cropco = im.getbbox()
     if cropco != None:
-        print(cropco)
         cropped = im.crop(cropco)
         cropped.save(loc + "\\sim_dog.png")
 
@@ -188,7 +186,6 @@ def importing():
             parts.append(Part(text[dat + 1], text[dat + 2], text[dat + 3], text[dat + 4], text[dat + 5], text[dat + 6]))
             parts[-1].draw()
     img_gen()
-    print(parts)
 
 
 r_frame = Frame(root, width=400, height=600)

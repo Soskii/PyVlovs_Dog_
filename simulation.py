@@ -218,7 +218,6 @@ class Dog:
         position = []
         position.append(int(self.body.position[0]))
         position.append(int(self.body.position[1]))
-        # pygame.draw.circle(simulation.screen, [255, 0, 0], position, 4)
 
     def apply_wheel_force(self, left_rpm, right_rpm):
         """
@@ -231,17 +230,6 @@ class Dog:
         for part in self.right_wheels:
             displacement = -right_rpm * part.get_circumference()
             part.apply_force((0.00, displacement))
-
-
-# class Object_Type:
-#     """
-#     An object type for the purposes of the simulation
-#     """
-#
-#     def __init__(self, colour, collide, collision_type):
-#         self.colour = colour
-#         self.collide = collide
-#         self.collision_type = collision_type
 
 
 class Object_Instance:
@@ -435,54 +423,3 @@ class Simulation:
 
     def quit(self):
         pygame.quit()
-
-
-"""
-Here is a demonstration case of the simulation working. 
-This simulation is complete, it just needs integration with the GUI
-The unintegrated version of the project that allows for this is in the folder "unintegrated"
-
-Don't click anything in the simulation, it will freeze because windows
-will think it's not responding due to a crash not deliberately
-"""
-#
-# black = [0, 0, 0]
-# brown = [90, 90, 30]
-# yellow = [255, 255, 0]
-#
-# #Creates the simulation
-#
-# sim = Simulation()
-#
-# #Defines the object type light, and creates two instances of it
-#
-# light = Object_Type([255, 255, 0], True, 1)
-# sim.add_static_body(light, 50, (640, 200))
-# sim.add_static_body(light, 50, (40, 40))
-#
-# #Creates the dog parts, as explained above
-#
-# chassis = Dog_Part([(0, 0), (50, 0), (50, 100), (0, 100)], (-25, -25), False, 0, brown)
-#
-# left_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (-36, -20), False, 0, black, wheel="L")
-# right_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (26, -20), False, 0, black, wheel="R")
-# b_left_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (-36, 35), False, 0, black, wheel="L")
-# b_right_wheel = Dog_Part([(0, 0), (10, 0), (10, 30), (0, 30)], (26, 35), False, 0, black, wheel="R")
-#
-# ldr = Dog_Part([(0, 0), (50, 0), (50, 6), (0, 6)], (-25, -35), True, 2, yellow)
-# ultra_sonic = Dog_Part([(0, 0), (6, 0), (6, 40), (0, 40)], (-3, -65), True, 3, black)
-#
-# dog_parts = [chassis, left_wheel, right_wheel, b_left_wheel, b_right_wheel, ldr, ultra_sonic]
-# sim.add_dog(dog_parts)
-#
-# #Creates a rule punishing the dog for contacting the LDR with light.
-#
-# sim.add_collision_handler(2, 1, "punish")
-#
-# while True:
-# #Feeds the neural network the current inputs, and receives the wheel rpms
-#     wheel_values = sim.input_network()
-# #Steps the simulation, and applies the wheel values to it
-#     sim.step(0.01, wheel_values[0], wheel_values[1])
-# #Updates the display
-#     sim.display_update(True)
