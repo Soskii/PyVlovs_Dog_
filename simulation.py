@@ -3,7 +3,6 @@ import pygame
 import math
 import importlib.machinery
 
-
 # PYGAME INITIALISE
 pygame.init()
 clock = pygame.time.Clock()
@@ -17,6 +16,10 @@ pygame.display.set_caption("Pyvlov's Dog - Simulation")
 #  and a shape is attached to it for collsions
 
 def hex_to_dec(hex_code):
+    """
+    Converts from a 6 digit hexadecimal value with a leading hash to a list of 3 decimal values.
+
+    """
     conversion_dict = {"A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15,
                        "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15}
     hex_code = hex_code[1:]
@@ -35,7 +38,6 @@ def hex_to_dec(hex_code):
             dec_value += value * (16 ** (1 - integer))
         dec_rgb.append(dec_value)
     return tuple(dec_rgb)
-
 
 
 class Collision_Handler:

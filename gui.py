@@ -205,7 +205,8 @@ class GUI_Window:
         self.sim_speed_frame = Frame(self.settings_frame)
         self.sim_speed_label = Label(self.sim_speed_frame, text="Simulation Speed")
         self.sim_speed_var = StringVar()
-        self.sim_speed = Scale(self.sim_speed_frame, orient=HORIZONTAL, variable=self.sim_speed_var, from_=0.01, to=1, resolution=0.01)
+        self.sim_speed = Scale(self.sim_speed_frame, orient=HORIZONTAL, variable=self.sim_speed_var, from_=0.01, to=1,
+                               resolution=0.01)
 
         self.dog_location_frame = Frame(self.settings_frame)
         self.dog_location_entry = Entry(self.dog_location_frame, width=40)
@@ -217,7 +218,8 @@ class GUI_Window:
         self.network_location_entry.insert(END, "networks\\placeholder_network.py")
         self.network_location_label = Label(self.network_location_frame, text="Network File Path", width=15, anchor=E)
 
-        self.quit_button = Button(self.settings_frame, text="Quit", command=self.exit, width=20, bg="#aa0000", fg="#ffffff")
+        self.quit_button = Button(self.settings_frame, text="Quit", command=self.exit, width=20, bg="#aa0000",
+                                  fg="#ffffff")
 
         self.sim_speed_frame.pack()
         self.sim_speed_label.pack(side=LEFT)
@@ -233,34 +235,41 @@ class GUI_Window:
         self.quit_button.pack(side=BOTTOM, pady=20)
 
     def add_object(self):
+        # Add an object to the object window
         new_object_window = Object_Interface(self)
         self.objects.append(new_object_window)
         new_object_window.pack_all()
 
     def remove_object(self):
+        # Removes the most recent object
         del (self.objects[-1])
         self.object_frame_main.delete(ALL)
         for object in self.objects:
             object.pack_all()
 
     def add_rule(self):
+        # Adds a rule into the gui for editing.
         new_rule_window = Rule_Interface(self)
         self.rules.append(new_rule_window)
         new_rule_window.pack_all()
 
     def remove_rule(self):
+        # Removes the most recent rule in the list.
         del (self.rules[-1])
         self.rules_frame_main.delete(ALL)
         for rule in self.rules:
             rule.pack_all()
 
     def quit(self):
+        # Triggers with the close of the GUI window, not the manual exit button.
         self.has_quit = True
         self.root.destroy()
 
     def exit(self):
+        # Triggers on the exit button that actually closes the window.
         self.exiting = True
         self.quit()
+
 
 class Object_Type:
     """
@@ -272,12 +281,16 @@ class Object_Type:
         self.collide = int(collide)
         self.collision_type = int(collision_type)
 
+
 class Running_Object_Window:
+    """
+    The object handling a given object in the runtime GUI.
+    """
+
     def __init__(self, object, super_gui):
         self.super_gui = super_gui
         self.canvas = super_gui.object_frame
         self.frame = Frame(self.canvas)
-
 
         self.colour_text = object.colour_var.get()
         self.colour_rgb = hex_to_dec(self.colour_text)
@@ -314,13 +327,15 @@ class Running_Object_Window:
         self.add_button.pack(side=LEFT)
 
     def set_active(self):
+        # Sets the active brush for the simulation, for object creation.
         self.super_gui.active_brush = self
-
-    def queue_instance(self):
-        self.super_gui.new_object_instances.append([self.template, self.slider.get(), (50, 50)])
 
 
 class Running_GUI:
+    """
+    The object handling the full runtime GUI
+    """
+
     def __init__(self, old_gui):
         self.root = Tk()
         self.root.maxsize(height=700)
@@ -338,11 +353,13 @@ class Running_GUI:
         self.object_frame.pack()
 
         for object in old_gui.objects:
+            # Converts the GUI objects for use in the runtime window.
             new_object = Running_Object_Window(object, self)
             self.object_types.append(new_object)
             new_object.pack_all()
 
     def update_gui(self):
+        # Used for keeping the gui updated.
         self.root.update_idletasks()
         self.root.update()
 
@@ -355,6 +372,10 @@ class Running_GUI:
 
 
 def hex_to_dec(hex_code):
+    """
+    Converts from a 6 digit hexadecimal value with a leading hash to a list of 3 decimal values.
+
+    """
     conversion_dict = {"A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15,
                        "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15}
     hex_code = hex_code[1:]
