@@ -414,7 +414,6 @@ class Simulation:
     def event_queue(self):
         """
         the pygame event queue. Used to allow the user to quit the pygame window
-        :return:
         """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
