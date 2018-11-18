@@ -52,7 +52,7 @@ while True:
         # While the user hasn't closed the simulation keep stepping through it.
         run_menu.update_gui()
         for click in sim.current_clicks:
-            # Converts the list of click locations into objects of the current brush.
+            # Converts the list of click locations into objects of the current brush's type.
             if run_menu.active_brush != None:
                 sim.add_static_body(run_menu.active_brush, run_menu.active_brush.slider.get(), click)
         # Clears the click locations

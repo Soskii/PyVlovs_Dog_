@@ -138,36 +138,10 @@ class GUI_Window:
         self.object_frame = Frame(self.root, width=400, height=600)
         self.settings_frame = Frame(self.root, width=400, height=600)
 
-        self.notebook.add(self.rule_frame, text="Rules")
         self.notebook.add(self.object_frame, text="Objects")
+        self.notebook.add(self.rule_frame, text="Rules")
         self.notebook.add(self.settings_frame, text="Simulator Settings")
 
-        """
-        the rules bit
-        """
-        self.rules = []
-
-        """
-        Putting together the rules window
-        """
-        self.rules_frame_header = Frame(self.rule_frame, width=400, height=30)
-        self.rules_frame_main = Canvas(self.rule_frame, width=383, height=570, bg="#999999")
-        self.add_rule_button = Button(self.rules_frame_header, text="New Rule", command=self.add_rule)
-        self.delete_rule_button = Button(self.rules_frame_header, text="Delete Rule", command=self.remove_rule)
-        self.rules_frame_scrollbar = Scrollbar(self.rule_frame)
-
-        """
-        Packing it all into the gui window
-        """
-
-        self.rules_frame_header.pack(fill=X)
-        self.add_rule_button.pack(side=LEFT, padx=3)
-        self.delete_rule_button.pack(side=LEFT, padx=3)
-        self.rules_frame_main.pack_propagate(0)
-        self.rules_frame_main.pack(side=LEFT, fill=BOTH)
-        self.rules_frame_scrollbar.pack(side=RIGHT, fill=Y)
-        self.rules_frame_main.configure(yscrollcommand=self.rules_frame_scrollbar.set)
-        self.rules_frame_scrollbar.config(command=self.rules_frame_main.yview)
         """
         the object bit
         """
@@ -198,6 +172,33 @@ class GUI_Window:
         self.object_frame_scrollbar.pack(side=RIGHT, fill=Y)
         self.object_frame_main.configure(yscrollcommand=self.object_frame_scrollbar.set)
         self.object_frame_main.configure(yscrollincrement="2")
+
+        """
+        the rules bit
+        """
+        self.rules = []
+
+        """
+        Putting together the rules window
+        """
+        self.rules_frame_header = Frame(self.rule_frame, width=400, height=30)
+        self.rules_frame_main = Canvas(self.rule_frame, width=383, height=570, bg="#999999")
+        self.add_rule_button = Button(self.rules_frame_header, text="New Rule", command=self.add_rule)
+        self.delete_rule_button = Button(self.rules_frame_header, text="Delete Rule", command=self.remove_rule)
+        self.rules_frame_scrollbar = Scrollbar(self.rule_frame)
+
+        """
+        Packing it all into the gui window
+        """
+
+        self.rules_frame_header.pack(fill=X)
+        self.add_rule_button.pack(side=LEFT, padx=3)
+        self.delete_rule_button.pack(side=LEFT, padx=3)
+        self.rules_frame_main.pack_propagate(0)
+        self.rules_frame_main.pack(side=LEFT, fill=BOTH)
+        self.rules_frame_scrollbar.pack(side=RIGHT, fill=Y)
+        self.rules_frame_main.configure(yscrollcommand=self.rules_frame_scrollbar.set)
+        self.rules_frame_scrollbar.config(command=self.rules_frame_main.yview)
 
         """
         the simulator settings bit
