@@ -153,10 +153,11 @@ class GUI_Window:
 
         self.readme_text = open("readme.md").read()
 
-        self.readme_container.pack()
+        self.readme_container.pack(pady=10)
         self.readme_container.pack_propagate(0)
         self.readme.pack(expand=True, fill=BOTH)
         self.readme.insert(END, self.readme_text)
+        self.readme.config(state=DISABLED)
 
 
         """
