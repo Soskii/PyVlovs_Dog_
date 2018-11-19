@@ -294,6 +294,9 @@ class Simulation:
         self.current_clicks = []
 
     def set_network(self, path):
+        """
+        https://programtalk.com/python-examples/importlib.machinery.SourceFileLoader/
+        """
         self.network_path = path
         if "\\" in path:
             name = path.split("\\")[-1]
