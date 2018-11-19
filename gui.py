@@ -134,13 +134,30 @@ class GUI_Window:
         """
         The frames displayed on the notebook as each tab
         """
-        self.rule_frame = Frame(self.root, width=400, height=600)
+        self.readme_frame = Frame(self.root, width=400, height=600)
         self.object_frame = Frame(self.root, width=400, height=600)
+        self.rule_frame = Frame(self.root, width=400, height=600)
         self.settings_frame = Frame(self.root, width=400, height=600)
 
+        self.notebook.add(self.readme_frame, text="Readme")
         self.notebook.add(self.object_frame, text="Objects")
         self.notebook.add(self.rule_frame, text="Rules")
         self.notebook.add(self.settings_frame, text="Simulator Settings")
+
+
+        """
+        The readme
+        """
+        self.readme_container = Frame(self.readme_frame, width=383, height=570)
+        self.readme = Text(self.readme_container, wrap=WORD)
+
+        self.readme_text = open("readme.md").read()
+
+        self.readme_container.pack()
+        self.readme_container.pack_propagate(0)
+        self.readme.pack(expand=True, fill=BOTH)
+        self.readme.insert(END, self.readme_text)
+
 
         """
         the object bit
