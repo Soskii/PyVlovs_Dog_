@@ -77,7 +77,7 @@ There are a few possible reasons it could crash. The first is running the file f
 - AST
   - Used for the literaleval function, so as to be able to take user entered lists and directly convert them to lists.
 - Tkinter
-  - Used for launcher GUI and Run-Time GUI.
+  - Used for launcher GUI, Run-Time GUI and Dog Creation Kit.
 - OS
   - Checking if the directory exists for the dog creation kits save function, and making it if it doesn't.
 - PIL
