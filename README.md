@@ -28,6 +28,7 @@ To create a dog open the <b>Dog Creation Kit.py</b> file to start! If you want t
     - Colour is entered into the program as a six-digit hexadecimal string, with a leading hash (#RRGGBB)
 - If it is a wheel.
     - A value of L R or N for left wheel, right wheel, or not a wheel respectively.
+    
 At any point click update to view the current version of your dog. Once satisfied, write in the directory you want to save it under, and click export.
 ### Writing an Algorithm
 Simply create a python file with a function called interact. Here is an example:
