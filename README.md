@@ -39,10 +39,20 @@ def interact(punish, reward):
 Then, when running the program, change the path in the launcher settings menu to the path of the file. The program will execute your function to find the wheel velocities, so include within it all needed steps between iterations.
 
 ### Running the Simulation
-Run the <b>main_loop.py</b> file. Once inside, you will see several headings. First click on the object header. Here, you can create an object.
+Run the <b>main_loop.py</b> file. Once inside, you will see several headings: Objects, Rules and Simulator Settings.
 #### Creating an Object
 Objects are things in the simulation that interact with the dog. They have a colour, type and are either a sensor or not. To create an object, click the add an object button. Then, fill in the colour, in the format of "#RRGGBB", the object type and whether the object is a sensor.
+#### Creating Rules
+Rules are simple structures that tell the simulation how to react to a collision in terms of feedback to the algorithm. As such, it has 3 pieces of data involved. The two things colliding, and if this is good or bad. The things are referred to by their type, such as a dog part of type 2 colliding with a object of type 4. If it is good or bad is defined by the punish/reward radial buttons on the right.
+#### Simulator Settings
+First, you must be sure that the paths written in the simulator settings are the paths of the dog and algorithm you want to use. Next, you may adjust the speed to one that you believe is suitable for your purposes.
 
+<b>Once you have completed all this, close the window with the X in the corner, to open the simulation.</b>
+
+### The Simulation Proper
+You will now see the dog on the screen, being controlled by the network. To interact with the network, you can add instances of an object you have created into the environment using the run-time settings window. Adjust its size and click add. Now, wherever you click in the simulation an object of that size and characteristics will appear.
+
+To return to the settings menu, close either window.
 
 ## FAQ
 ### Why is the colour I am entering being turned to black/causing an error?
@@ -59,6 +69,9 @@ The physics engine (PyMunk) uses a stepped collision algorithm. As such, if the 
 
 ### How do I exit the program?
 The quit button is at the bottom of the settings menu in the launcher.
+
+### It's crashing, help!
+There are a few possible reasons it could crash. The first is running the file from an improper location. <b>The file must be run from the folder it is in.</b> The next is not filling in parts of the gui. If certain things are not filled in, such as leaving object types blank in a rule, will result in a crash.
 
 ## Libraries Used
 - AST
