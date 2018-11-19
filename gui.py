@@ -139,7 +139,7 @@ class GUI_Window:
         self.rule_frame = Frame(self.root, width=400, height=600)
         self.settings_frame = Frame(self.root, width=400, height=600)
 
-        self.notebook.add(self.readme_frame, text="Readme")
+        self.notebook.add(self.readme_frame, text="ReadMe")
         self.notebook.add(self.object_frame, text="Objects")
         self.notebook.add(self.rule_frame, text="Rules")
         self.notebook.add(self.settings_frame, text="Simulator Settings")

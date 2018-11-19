@@ -401,8 +401,9 @@ class Simulation:
         to access the punish/reward things right now use self.punish and self.reward. they will be equal to the
         current values
         """
+        x, y = self.dog.body.position[0], self.dog.body.position[1]
 
-        return self.network.interact(self.punish, self.reward)
+        return self.network.interact(self.punish, self.reward, x, y)
 
     def add_collision_handler(self, object_type_1, object_type_2, outcome):
         """
