@@ -1,3 +1,4 @@
+#Warning this does not work in current state.
 import numpy as np
 
 X = np.array([(1, 0, 0, 0), (0, 1, 0, 0), (1, 0, 100, 100), (0, 1, 100, 100)], dtype=float)

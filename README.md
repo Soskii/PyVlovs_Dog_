@@ -6,7 +6,7 @@ This is PyVlov's Dog, a software package designed to enable a user to recreate c
 
 PyVlov's dog is a software package that is designed to give the user the tools to recreate classical conditioning. It allows the user to 
  - Create a custom simulated dog!
- - Import their own algorithm to act as the dogs brain, or use one of two preset ones.
+ - Import their own algorithm to act as the dogs brain.
  - Create objects in the Simulation to collide with the dog.
  - Define rules for the dog to be trained against.
 
